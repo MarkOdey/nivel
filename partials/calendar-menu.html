@@ -1,0 +1,52 @@
+<div class="container">
+
+	<div class="border-top"></div>
+
+	<div class="container submenu">
+
+		<span class="item" ng-repeat='(yearKey, year) in years' ng-class="{ active : activeDate.year() == year.year() }" ng-click='changeYear(year)'>
+
+			{{year | moment : 'YYYY'}}
+
+		</span>
+
+	</div>
+
+	<div class="border-top"></div>
+
+	<div class="container submenu">
+
+		<span class="item" ng-repeat='(monthKey, month) in months' ng-class="{ active : activeDate.month() == month.month() }" ng-click='changeMonth(month)'>
+
+	    	{{month | moment : 'MMMM'}}
+		
+		</span>
+
+	</div>
+
+	<div class="border-top"></div>
+
+	<div class="container submenu">
+
+		<span class="item" ng-repeat='(dayKey, day) in days' ng-class="{ active :  startDate.format('DD') <= day.format('DD') && endDate.format('DD') >= day.format('DD') }"  ng-click='changeDay(day)'>
+
+		    {{day | moment : 'DD'}}
+
+		</span>
+
+	</div>
+
+	<div class="border-top"></div>
+
+	<div class="container center">
+
+		<h1 style="padding-top:10px">
+			<span ng-click="getPreviousDay()" class="icon icon-arrow-left-c"></span>
+
+				{{startDate | moment : 'DD MMMM YYYY'}} / {{endDate | moment : 'DD MMMM YYYY'}}
+			
+			<span ng-click="getNextDay()" class="icon icon-arrow-right-c"></span>
+		</h1>
+
+	</div>
+</div>

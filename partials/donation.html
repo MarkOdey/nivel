@@ -1,0 +1,26 @@
+<form target="paypal" action="https://www.paypal.com/cgi-bin/webscr" method="post" target="_top">
+
+	<input type="hidden" name="cmd" value="_cart">
+	<input type="hidden" name="business" value="alfonso@fonderiedarling.org">
+	<input type="hidden" name="lc" value="CA">
+	<input type="hidden" name="item_name" value="{{title}}">
+	<input type="hidden" name="currency_code" value="CAD">
+	<input type="hidden" name="button_subtype" value="products">
+	<input type="hidden" name="no_note" value="0">
+	<input type="hidden" name="add" value="1">
+
+
+
+
+	<input id="amount" class="fieldInput" type="number" ng-model="amount" name="amount" >
+		
+
+	<div ng-click="send()" class="button">
+		
+		{{buttontext}}
+	
+	</div>
+
+
+
+</form>
