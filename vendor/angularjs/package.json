@@ -1,28 +1,27 @@
 {
-  "_from": "angularjs",
+  "_from": "angularjs@0.0.1",
   "_id": "angularjs@0.0.1",
   "_inBundle": false,
   "_integrity": "sha1-SW9QxxQVFedB6pdt6JHe8IOLPxk=",
   "_location": "/angularjs",
   "_phantomChildren": {},
   "_requested": {
-    "type": "tag",
+    "type": "version",
     "registry": true,
-    "raw": "angularjs",
+    "raw": "angularjs@0.0.1",
     "name": "angularjs",
     "escapedName": "angularjs",
-    "rawSpec": "",
+    "rawSpec": "0.0.1",
     "saveSpec": null,
-    "fetchSpec": "latest"
+    "fetchSpec": "0.0.1"
   },
   "_requiredBy": [
-    "#USER",
     "/"
   ],
   "_resolved": "https://registry.npmjs.org/angularjs/-/angularjs-0.0.1.tgz",
   "_shasum": "496f50c7141515e741ea976de891def0838b3f19",
-  "_spec": "angularjs",
-  "_where": "/home/markodey/workspace/sites/nivel",
+  "_spec": "angularjs@0.0.1",
+  "_where": "/home/markodey/workspace/sites/audetmacom/vendor/nivel",
   "author": {
     "name": "Eugene Ware",
     "email": "eugene@noblesamurai.com"

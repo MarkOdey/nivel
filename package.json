@@ -1,17 +1,37 @@
 {
-  "name": "nivel",
-  "version": "0.2.0",
-  "description": "Website portfolio.",
-  "repository": {
+  "_from": "git+https://github.com/MarkOdey/nivel.git",
+  "_id": "nivel@0.2.0",
+  "_inBundle": false,
+  "_location": "/nivel",
+  "_phantomChildren": {},
+  "_requested": {
     "type": "git",
-    "url": ""
+    "raw": "nivel@git+https://github.com/MarkOdey/nivel.git",
+    "name": "nivel",
+    "escapedName": "nivel",
+    "rawSpec": "git+https://github.com/MarkOdey/nivel.git",
+    "saveSpec": "git+https://github.com/MarkOdey/nivel.git",
+    "fetchSpec": "https://github.com/MarkOdey/nivel.git",
+    "gitCommittish": null
   },
-  "main": "GruntFile.js",
-  "author": "Marc-Andre Audet",
-  "license": "WTFPL",
-  "scripts": {
-    "setup": "npm install && grunt migrate && grunt dev"
+  "_requiredBy": [
+    "/"
+  ],
+  "_resolved": "git+https://github.com/MarkOdey/nivel.git#2b872a5088ddebe58f294ea8a3b1ce55377d94ee",
+  "_spec": "nivel@git+https://github.com/MarkOdey/nivel.git",
+  "_where": "/home/markodey/workspace/sites/audetmacom",
+  "author": {
+    "name": "Marc-Andre Audet"
   },
+  "bundleDependencies": false,
+  "dependencies": {
+    "angular": "^1.7.5",
+    "angularjs": "0.0.1",
+    "moment": "^2.18.1",
+    "perfect-scrollbar": "^0.7.1"
+  },
+  "deprecated": false,
+  "description": "Website portfolio.",
   "devDependencies": {
     "grunt": "^1.0.1",
     "grunt-angular-templates": "^1.1.0",
@@ -23,15 +43,20 @@
     "grunt-remove": "^0.1.0",
     "grunt-sass": "^2.1.0"
   },
-  "dependencies": {
-    "angular": "^1.7.5",
-    "angularjs": "0.0.1",
-    "moment": "^2.18.1",
-    "perfect-scrollbar": "^0.7.1"
-  },
   "keywords": [
     "layout",
     "resize",
     "frame"
-  ]
+  ],
+  "license": "WTFPL",
+  "main": "GruntFile.js",
+  "name": "nivel",
+  "repository": {
+    "type": "git",
+    "url": ""
+  },
+  "scripts": {
+    "setup": "npm install && grunt migrate && grunt dev"
+  },
+  "version": "0.2.0"
 }

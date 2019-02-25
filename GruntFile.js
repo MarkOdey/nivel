@@ -67,7 +67,7 @@ module.exports = function(grunt) {
         'ngtemplates',
         "copy",
         "concat",
-        "watch"
+        "watch:concat"
     ]);
 
 

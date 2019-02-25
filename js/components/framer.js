@@ -12,7 +12,10 @@ angular
             cropheight:'@',
             width:'@',
             height:'@',
-            layout:'<'
+            layout:'<',
+            centerx:'@',
+            centery:'@',
+            zoom:"@",
 
         },
         link: function ($scope, $element, $attr) {
@@ -35,7 +38,6 @@ angular
 
             console.log(parent[0]);
 
-
             elementStyle.display = 'block';
             elementStyle.position = 'absolute';
             elementStyle.left = '0px';
@@ -44,12 +46,57 @@ angular
             elementStyle.height = '100%';
 
 
+
+            if($scope.width == undefined) {
+
+                $scope.width = 100;
+            }
+
+
+            if($scope.height == undefined) {
+
+                $scope.height = 100;
+            }
+
+            if($scope.cropx == undefined) {
+
+                $scope.cropx = 50;
+            }
+
+            if($scope.cropy == undefined) {
+
+                $scope.cropy = 50;
+                
+            }
+
+
+            if($scope.centerx == undefined) {
+
+                $scope.centerx = 50;
+            }
+
+            if($scope.centery == undefined) {
+
+                $scope.centery = 50;
+                
+            }
+
+
+
+            if($scope.zoom == undefined) {
+
+                $scope.zoom = 1;
+            }else {
+
+                $scope.zoom = Number($scope.zoom);
+            }
+
             elementStyle.overflow = 'hidden';
 
 
             if($scope.layout == undefined) {
 
-                $scope.layout = "fit";
+                $scope.layout = "centered";
             }
 
 
@@ -117,6 +164,9 @@ angular
 
                         computeFitLayout();
 
+                    } else if($scope.layout == "centered") {
+
+                        computeCenteredLayout();
                     }
                     
 
@@ -146,6 +196,67 @@ angular
             $scope.resize = resize;
 
             resize();
+
+            var computeCenteredLayout = function () {
+
+
+                if(image == undefined) {
+                    
+                    imgDom = $element.find('img');
+                    image = imgDom[0];
+
+                }
+
+
+
+                //Gets image ratio
+                var originW = image.naturalWidth;
+                var originH = image.naturalHeight;
+
+                //Gets parent element width;
+                var parentW = $element[0].offsetWidth;
+                var parentH = $element[0].offsetHeight;
+
+
+                var imageRatio = originH/originW;
+
+                var parentRatio = parentH/parentW;
+
+                var imageW;
+                var imageH;
+
+
+                //Width will be 100%;
+                if(imageRatio > parentRatio) {
+
+                    imageW = parentW*$scope.zoom;
+                    imageH = (originH/originW)*imageW;
+
+                } else {
+
+                    imageH = parentH*$scope.zoom;
+                    imageW = (originW/originH)*imageH;
+
+                }
+
+
+                var leftPos = (parentW*0.5)-(Number($scope.centerx)/100)*imageW;
+                var topPos  = (parentH*0.5)-(Number($scope.centery)/100)*imageH;
+
+
+                image.style.position = "absolute";
+                image.style.display = "block";
+                image.style.left = leftPos+"px";
+                image.style.top = topPos+"px";
+                image.style.width = imageW+"px";
+                image.style.height = imageH+"px";
+
+
+
+
+                console.log("centered image");
+
+            }
 
 
 
@@ -185,6 +296,9 @@ angular
                 }
 
 
+
+
+
             }
 
 
@@ -204,9 +318,11 @@ angular
                 var RCxPct =  RCx/$scope.width;
                 var RCyPct = RCy/$scope.height;
 
+                //Gets image ratio
                 var imageW = image.naturalWidth;
                 var imageH = image.naturalHeight;
 
+                //Gets parent element width;
                 var parentW = $element[0].offsetWidth;
                 var parentH = $element[0].offsetHeight;
 
