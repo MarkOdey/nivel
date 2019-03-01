@@ -6,27 +6,94 @@ angular
 	    restrict: 'AC',
 	    scope : {
 
-	      "animation" : "@",
+	      "animationin" : "@",
+	      "animationout" : "@",
 	      "from":"@",
-	      "to":"@"
+	      "to":"@",
+	      "visible":"@"
 
 
 	    },
 
 	    link: function ($scope, $element, $attr) {
 
-
-	    	console.log('animation');
-
-	    	var shown = false;
+	    	console.log('nivel is updating');
+	    	var shown = true;
 
 
-
+	    	update();
+	    	
 			var scrollEvent = window.document.addEventListener("scroll", function (e) {
+
+				update();
+			});
+
+
+			function update() {
+
+				//console.log('at scroll');
+
+				if($scope.visible != undefined) {
+
+					console.log('based on visible');
+
+					var element;
+
+					if($scope.visible == "parent") {
+
+						element = $element.parent();
+					}
+
+					var isVisible = checkVisible(element[0]);
+
+					if(isVisible) {
+
+						//console.log('in bound');
+
+						show();
+
+					} else {
+
+						//console.log('out bound');
+						
+						hide();
+				
+					}
+
+
+
+					return;
+				}
+
+				if($scope.to != undefined && $scope.from != undefined) {
+
+					var inBound = checkBound();
+					if(inBound) {
+
+						//console.log('in bound');
+
+						show();
+
+					} else {
+
+						//console.log('out bound');
+						
+						hide();
+				
+					}
+
+
+					return;
+				}
+			
+
+			}
+
+			function checkBound() {
 
 				var doc = window.document;
 
-				var top = (window.pageYOffset || doc.scrollTop)  - (doc.clientTop || 0);
+				var top = window.pageYOffset ;
 
 				if($scope.from == undefined) {
 
@@ -48,53 +115,24 @@ angular
 				if(Number($scope.to) < Number(top) ||
 				   Number($scope.from) > Number(top)) {
 
-					if(shown) {
-
-						shown = false;
-
-						//$element[0].style.display = "none";
-						//
-						
-						//s$element[0].style.visibility = "visible";
-						$element[0].style.opacity = "0";
-						$element[0].style.transition = "opacity 0.5s linear";
-
-						// visibility: visible;
-						//  opacity: 1;
-						//  transition: opacity 2s linear;
-
-
-					}
-
-					//console.log('fadeout');
+					return false;
 
 				} else {
 
-					if(!shown) {
-
-						shown = true;
-
-						//$element[0].style.display = "block";
-
-						
-						//$element[0].style.visibility = "hidden";
-						$element[0].style.opacity = "1";
-						$element[0].style.transition = "opacity 0.5s linear";
-
-						//visibility: hidden;
-  						//opacity: 0;
-  						//transition: visibility 0s 2s, opacity 2s linear;
-
-						
-					}
-
-					//console.log('fadeins');
+					return true;
 
 				}
 
 
 
-			});
+			}
+
+
+			function checkVisible(elm) {
+				var rect = elm.getBoundingClientRect();
+				var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
+				return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
+			}
 
 
 			$scope.$on('$destroy', function () {
@@ -102,6 +140,71 @@ angular
 				window.document.removeEventListener("scroll", scrollEvent);
 
 			});
+
+
+			function hide () {
+
+				if(shown) {
+
+					console.log('hide');
+
+					if($scope.animationin != undefined) {
+
+						$element.addClass($scope.animationin);
+						$element.removeClass($scope.animationout);
+					}
+
+
+
+					//$element[0].style.display = "none";
+					//
+					
+					//s$element[0].style.visibility = "visible";
+					$element[0].style.opacity = "0";
+					$element[0].style.transition = "opacity 0.5s linear";
+
+					shown = false;
+
+				}
+				
+
+
+
+			}
+
+			function show () {
+
+				if(!shown) {
+
+					console.log('show');
+
+					if($scope.animationout != undefined) {
+
+						$element.addClass($scope.animationout);
+						$element.removeClass($scope.animationin);
+					}
+
+					//$element[0].style.display = "block";
+
+					
+					//$element[0].style.visibility = "hidden";
+					$element[0].style.opacity = "1";
+					$element[0].style.transition = "opacity 0.5s linear";
+
+					//visibility: hidden;
+						//opacity: 0;
+						//transition: visibility 0s 2s, opacity 2s linear;
+
+					shown = true;
+
+					
+				}
+
+
+
+
+
+			}
 
 
 

@@ -15,6 +15,7 @@ angular
             $element.addClass('fadeIn');
 
 
+
             if($scope.height==undefined) {
 
                 $scope.height = Number($element[0].offsetHeight);
