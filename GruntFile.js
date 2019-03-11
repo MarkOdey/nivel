@@ -54,7 +54,7 @@ module.exports = function(grunt) {
 
             },
             dist: {
-                src: ['js/**/*.js'],
+                src: ['js/**/*.js', 'tmp/templates.js'],
                 dest: 'build/nivel.js',
             },
         },

@@ -1563,7 +1563,8 @@ angular
 
     }
 
-}]);angular
+}]);
+angular
 .module('nivel')
 .directive('scrollFade', [  function() {
 
@@ -1583,7 +1584,7 @@ angular
 	    link: function ($scope, $element, $attr) {
 
 	    	console.log('nivel is updating');
-	    	var shown = true;
+	    	var shown = false;
 
 
 	    	update();
@@ -1607,6 +1608,10 @@ angular
 					if($scope.visible == "parent") {
 
 						element = $element.parent();
+					} else {
+
+
+						element = angular.element($scope.visible);
 					}
 
 					var isVisible = checkVisible(element[0]);
