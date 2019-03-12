@@ -952,7 +952,7 @@ angular
         },
         link: function ($scope, $element, $attr) {
 
-            var image;
+            var elements;
 
 
             $scope.cropx = Number($scope.cropx);
@@ -1052,7 +1052,7 @@ angular
 
                 resize(callback);
 
-            }, $element);
+            }, $element[0]);
 
             $scope.$watch('layout', function () {
 
@@ -1063,17 +1063,19 @@ angular
 
             });
            
-            var imgDom = $element.find('img');
+            var elements = $element.children();
 
 
-            imgDom.on('load', function () {
-
-                image = this;
+            elements.on('load', function () {
 
                 resize();
 
             });
 
+            elements.on('loadedmetadata', function () {
+
+                resize();
+            })
 
             
 
@@ -1083,40 +1085,54 @@ angular
                 $element.addClass('fadeOut');
                 $element.removeClass('fadeIn');
 
-
+                console.log(elements);
 
                 requestAnimationFrame(function() {
 
+                    try {
 
-                    if($scope.layout == "normal") {
+                        elements.each(function () {
 
-                        computeNormalLayout();
+                            var element = this;
 
-                    } else if($scope.layout == "fit") {
+                            if($scope.layout == "normal") {
 
-                        computeFitLayout();
+                                computeNormalLayout(element);
 
-                    } else if($scope.layout == "centered") {
+                            } else if($scope.layout == "fit") {
 
-                        computeCenteredLayout();
-                    }
-                    
+                                computeFitLayout(element);
 
-                    if(typeof callback == 'function'){
+                            } else if($scope.layout == "centered") {
 
-                        callback();
-
-                    };
-
-
-                    window.setTimeout(function () {
-
+                                computeCenteredLayout(element);
+                            }
                             
-                        $element.addClass('fadeIn');
-                        $element.removeClass('fadeOut');
+                            if(typeof callback == 'function'){
+
+                                callback();
+
+                            };
+
+                            window.setTimeout(function () {
+                                    
+                                $element.addClass('fadeIn');
+                                $element.removeClass('fadeOut');
+
+                            }, 200);
+
+                        });
 
 
-                    }, 200);
+                    } catch (e) {
+
+
+                        throw e;
+
+                    }
+
+
+
 
 
                 });
@@ -1129,101 +1145,101 @@ angular
 
             resize();
 
-            var computeCenteredLayout = function () {
+            var computeCenteredLayout = function (element) {
 
+                var originW, originH;
 
-                if(image == undefined) {
-                    
-                    imgDom = $element.find('img');
-                    image = imgDom[0];
+                if(element.naturalWidth != undefined) {
+
+                    //Gets element ratio
+                    originW = element.naturalWidth;
+                    originH = element.naturalHeight;
 
                 }
 
+                if(element.videoWidth != undefined) {
+
+                    //Gets element ratio
+                    originW = element.videoWidth;
+                    originH = element.videoHeight;
 
 
-                //Gets image ratio
-                var originW = image.naturalWidth;
-                var originH = image.naturalHeight;
+                }
+
 
                 //Gets parent element width;
                 var parentW = $element[0].offsetWidth;
                 var parentH = $element[0].offsetHeight;
 
 
-                var imageRatio = originH/originW;
+                var elementRatio = originH/originW;
 
                 var parentRatio = parentH/parentW;
 
-                var imageW;
-                var imageH;
+                var elementW;
+                var elementH;
 
 
                 //Width will be 100%;
-                if(imageRatio > parentRatio) {
+                if(elementRatio > parentRatio) {
 
-                    imageW = parentW*$scope.zoom;
-                    imageH = (originH/originW)*imageW;
+                    elementW = parentW*$scope.zoom;
+                    elementH = (originH/originW)*elementW;
 
                 } else {
 
-                    imageH = parentH*$scope.zoom;
-                    imageW = (originW/originH)*imageH;
+                    elementH = parentH*$scope.zoom;
+                    elementW = (originW/originH)*elementH;
 
                 }
 
 
-                var leftPos = (parentW*0.5)-(Number($scope.centerx)/100)*imageW;
-                var topPos  = (parentH*0.5)-(Number($scope.centery)/100)*imageH;
+                var leftPos = (parentW*0.5)-(Number($scope.centerx)/100)*elementW;
+                var topPos  = (parentH*0.5)-(Number($scope.centery)/100)*elementH;
 
 
-                image.style.position = "absolute";
-                image.style.display = "block";
-                image.style.left = leftPos+"px";
-                image.style.top = topPos+"px";
-                image.style.width = imageW+"px";
-                image.style.height = imageH+"px";
+                element.style.position = "absolute";
+                element.style.display = "block";
+                element.style.left = leftPos+"px";
+                element.style.top = topPos+"px";
+                element.style.width = elementW+"px";
+                element.style.height = elementH+"px";
 
 
 
 
-                console.log("centered image");
+                console.log("centered element");
 
             }
 
 
 
-            var computeNormalLayout = function () {
+            var computeNormalLayout = function (element) {
 
 
-                if(image == undefined) {
-                    
-                    imgDom = $element.find('img');
-                    image = imgDom[0];
-
-                }
 
                 var parentW = $element[0].offsetWidth;
                 var parentH = $element[0].offsetHeight;
 
-                if(parentW/parentH > image.width/image.height) {
+                if(parentW/parentH > element.width/element.height) {
 
-                    image.style.height = "100%";
-                    image.style.width = "auto";
-                    image.style.position = "absolute";
-                    image.style.margin = "auto";
-                    image.style.display = "block";
-                    image.style.top = "0px";
-                    image.style.left = parentW/2-image.width/2+"px";
+                    element.style.height = "100%";
+                    element.style.width = "auto";
+                    element.style.position = "absolute";
+                    element.style.margin = "auto";
+                    element.style.display = "block";
+                    element.style.top = "0px";
+                    element.style.left = parentW/2-element.width/2+"px";
 
                 } else {
 
-                    image.style.height = "auto";
-                    image.style.width = "100%";
-                    image.style.position = "absolute";
-                    image.style.margin = "auto";
-                    image.style.display = "block";
-                    image.style.left = "0px";
-                    image.style.top = parentH/2-image.height/2 + "px";
+                    element.style.height = "auto";
+                    element.style.width = "100%";
+                    element.style.position = "absolute";
+                    element.style.margin = "auto";
+                    element.style.display = "block";
+                    element.style.left = "0px";
+                    element.style.top = parentH/2-element.height/2 + "px";
 
                 }
 
@@ -1234,15 +1250,8 @@ angular
             }
 
 
-            var computeFitLayout = function () {
+            var computeFitLayout = function (element) {
 
-
-                if(image == undefined) {
-                    
-                    imgDom = $element.find('img');
-                    image = imgDom[0];
-
-                }
 
                 var RCx = Number($scope.cropx) + Number($scope.cropwidth)/2;
                 var RCy =  Number($scope.cropy) + Number($scope.cropheight)/2;
@@ -1250,54 +1259,68 @@ angular
                 var RCxPct =  RCx/$scope.width;
                 var RCyPct = RCy/$scope.height;
 
-                //Gets image ratio
-                var imageW = image.naturalWidth;
-                var imageH = image.naturalHeight;
+
+                if(element.naturalWidth != undefined) {
+
+                    //Gets element ratio
+                    var elementW = element.naturalWidth;
+                    var elementH = element.naturalHeight;
+
+                }
+
+                if(element.videoWidth != undefined) {
+                    
+                    //Gets element ratio
+                    var elementW = element.videoWidth;
+                    var elementH = element.videoHeight;
+
+                }
+
 
                 //Gets parent element width;
                 var parentW = $element[0].offsetWidth;
                 var parentH = $element[0].offsetHeight;
 
 
-                var imageRatio = imageH/imageW;
+                var elementRatio = elementH/elementW;
 
                 var parentRatio = parentH/parentW;
 
             
-                image.style.position = "absolute";
+                element.style.position = "absolute";
 
                 //Width will be 100%;
-                if(imageRatio > parentRatio) {
+                if(elementRatio > parentRatio) {
 
-                    var imageWidth = parentW;
+                    var elementWidth = parentW;
 
-                    image.style.width = imageWidth+"px";
-                    image.style.height = "auto";
+                    element.style.width = elementWidth+"px";
+                    element.style.height = "auto";
 
-                    var top = RCyPct * image.offsetHeight - parentH/2; 
+                    var top = RCyPct * element.offsetHeight - parentH/2; 
 
                     if(top < 0) {
 
                         top = 0;
                     }
 
-                    if(image.offsetHeight - top < parentH) {
+                    if(element.offsetHeight - top < parentH) {
 
-                        top += (image.offsetHeight - top) - parentH;
+                        top += (element.offsetHeight - top) - parentH;
 
                     }
 
-                    image.style.top = -top + "px";
-                    image.style.left = "0px";
+                    element.style.top = -top + "px";
+                    element.style.left = "0px";
 
                 } else {
 
-                    var imageHeight = parentH;
+                    var elementHeight = parentH;
 
-                    image.style.height = imageHeight + "px";
-                    image.style.width = "auto";
+                    element.style.height = elementHeight + "px";
+                    element.style.width = "auto";
 
-                    var left = RCxPct * image.offsetWidth - parentW/2;
+                    var left = RCxPct * element.offsetWidth - parentW/2;
 
                     if(left < 0){
 
@@ -1305,13 +1328,13 @@ angular
 
                     }
 
-                    if(image.offsetWidth - left < parentW) {
+                    if(element.offsetWidth - left < parentW) {
 
-                        left += (image.offsetWidth - left) - parentW;
+                        left += (element.offsetWidth - left) - parentW;
                     }
 
-                    image.style.top = "0px";
-                    image.style.left = -left + "px";
+                    element.style.top = "0px";
+                    element.style.left = -left + "px";
 
                 }
             
