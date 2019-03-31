@@ -1,1 +1,9 @@
 *[scroll-fade] { opacity: 0;}
+
+.animated
+{
+-webkit-animation-duration: 1s;
+animation-duration: 1s;
+-webkit-animation-fill-mode: initial; //Changed from both to initial 
+animation-fill-mode: initial; /*Changed from both to initial
+}

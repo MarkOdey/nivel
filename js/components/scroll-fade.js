@@ -1,4 +1,5 @@
 
+
 angular
 .module('nivel')
 .directive('scrollFade', [  function() {
@@ -18,15 +19,30 @@ angular
 
 	    link: function ($scope, $element, $attr) {
 
-	    	console.log('nivel is updating');
+
+
+
+	    	//console.log('nivel is updating');
 	    	var shown = false;
 
 
 	    	update();
+
+	    	var debounce;
 	    	
 			var scrollEvent = window.document.addEventListener("scroll", function (e) {
 
-				update();
+				if(debounce != undefined) {
+
+					clearTimeout(debounce);
+				}
+
+				debounce = setTimeout(function () {
+
+					update();
+
+				}, 100);
+
 			});
 
 
@@ -36,7 +52,7 @@ angular
 
 				if($scope.visible != undefined) {
 
-					console.log('based on visible');
+					//console.log('based on visible');
 
 					var element;
 
@@ -136,7 +152,7 @@ angular
 			function checkVisible(elm) {
 				var rect = elm.getBoundingClientRect();
 				var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
-				return !(rect.bottom < 0 || rect.top - viewHeight >= 0);
+				return !(rect.top < 0 || rect.top - viewHeight >= 0);
 			}
 
 
@@ -149,24 +165,37 @@ angular
 
 			function hide () {
 
+
 				if(shown) {
 
-					console.log('hide');
+					//console.log('hide');
 
 					if($scope.animationin != undefined) {
 
-						$element.addClass($scope.animationin);
-						$element.removeClass($scope.animationout);
+
+						$element.removeClass($scope.animationin);
+
+						$element.addClass('animated');
+
+						$element.addClass($scope.animationout);
+
+
+					} else {
+
+
+
+						//$element[0].style.display = "none";
+						//
+						
+						////s$element[0].style.visibility = "visible";
+						
+						$element[0].style.transition = "opacity 0.5s linear";
+
+
 					}
 
 
 
-					//$element[0].style.display = "none";
-					//
-					
-					//s$element[0].style.visibility = "visible";
-					$element[0].style.opacity = "0";
-					$element[0].style.transition = "opacity 0.5s linear";
 
 					shown = false;
 
@@ -179,22 +208,31 @@ angular
 
 			function show () {
 
+
+				$element[0].style.opacity = "1";
+
+
 				if(!shown) {
 
-					console.log('show');
+					//console.log('show');
 
 					if($scope.animationout != undefined) {
 
-						$element.addClass($scope.animationout);
-						$element.removeClass($scope.animationin);
-					}
+						$element.removeClass($scope.animationout);
+
+						$element.addClass('animated');
+
+						$element.addClass($scope.animationin);
+
+					} else {
+
+
+						$element[0].style.transition = "opacity 0.5s linear";
+
+					}				
 
 					//$element[0].style.display = "block";
 
-					
-					//$element[0].style.visibility = "hidden";
-					$element[0].style.opacity = "1";
-					$element[0].style.transition = "opacity 0.5s linear";
 
 					//visibility: hidden;
 						//opacity: 0;
