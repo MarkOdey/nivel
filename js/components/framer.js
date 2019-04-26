@@ -36,7 +36,7 @@ angular
 
             var parent = $element.parent();
 
-            console.log(parent[0]);
+            ////console.log(parent[0]);
 
             elementStyle.display = 'block';
             elementStyle.position = 'absolute';
@@ -124,7 +124,7 @@ angular
 
             $scope.$watch('layout', function () {
 
-                console.log($scope.layout);
+                //console.log($scope.layout);
 
                 resized = false;
                 resize();
@@ -153,7 +153,7 @@ angular
                 $element.addClass('fadeOut');
                 $element.removeClass('fadeIn');
 
-                console.log(elements);
+                //console.log(elements);
 
                 requestAnimationFrame(function() {
 
@@ -276,7 +276,7 @@ angular
 
 
 
-                console.log("centered element");
+                //console.log("centered element");
 
             }
 
@@ -410,7 +410,7 @@ angular
 
             /* resizer.addEventListener('scroll', function(e) {
                 
-                console.log('firing');
+                //console.log('firing');
                 resize();
             });*/
       

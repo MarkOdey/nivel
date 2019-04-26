@@ -1,11 +1,14 @@
+
 var template= angular.module('templates', []);
 
 var app = angular.module('nivel', []);
 
-angular.element(function() {
+/*angular.element(function() {
     console.log('instantiate');
     angular.bootstrap(document.body, ['nivel']);
-});
+});*/
+
+
 angular
    .module('nivel')
    .service('AnchorService', [ function () {
@@ -968,7 +971,7 @@ angular
 
             var parent = $element.parent();
 
-            console.log(parent[0]);
+            ////console.log(parent[0]);
 
             elementStyle.display = 'block';
             elementStyle.position = 'absolute';
@@ -1056,7 +1059,7 @@ angular
 
             $scope.$watch('layout', function () {
 
-                console.log($scope.layout);
+                //console.log($scope.layout);
 
                 resized = false;
                 resize();
@@ -1085,7 +1088,7 @@ angular
                 $element.addClass('fadeOut');
                 $element.removeClass('fadeIn');
 
-                console.log(elements);
+                //console.log(elements);
 
                 requestAnimationFrame(function() {
 
@@ -1208,7 +1211,7 @@ angular
 
 
 
-                console.log("centered element");
+                //console.log("centered element");
 
             }
 
@@ -1342,7 +1345,7 @@ angular
 
             /* resizer.addEventListener('scroll', function(e) {
                 
-                console.log('firing');
+                //console.log('firing');
                 resize();
             });*/
       
@@ -1589,6 +1592,90 @@ angular
 }]);
 
 angular
+   .module('nivel')
+   .directive('lang', [ 'language', function (language) {
+
+      return {
+        restrict: 'A',
+
+        link: function ($scope, $element, $attr) {
+
+
+            $scope.html = "";
+            $scope.lang;
+
+            if($attr.lang != undefined) {
+
+                $scope.lang = $attr.lang;
+
+            }
+
+
+            $scope.html = $element.html();
+
+            var render = function () {
+
+                if(language.lang == $scope.lang) {
+
+                    var children = $element.children();
+
+                    if(children.length == 0) {
+
+                        $element.append($scope.html);
+
+                    }
+
+                } else {
+
+                    console.log('destroying');
+
+                    $scope.$destroy();
+                    $element.empty();
+
+                }
+            }
+
+            render();
+
+
+
+
+            console.log($attr);
+
+            console.log($element);
+
+        }
+
+    }
+}]);
+
+
+angular
+   .module('nivel')
+   .directive('selectLang', [ 'language', function (language) {
+
+      return {
+        restrict: 'A',
+
+
+        link: function ($scope, $element, $attr) {
+
+            if($attr.selectLang != undefined) {
+
+                $element.on('click', function () {
+
+                    language.set($attr.selectLang);
+
+                });
+            }
+
+
+        }
+
+    }
+}]);
+
+angular
 .module('nivel')
 .directive('scrollFade', [  function() {
 
@@ -1617,19 +1704,35 @@ angular
 	    	update();
 
 	    	var debounce;
+	    	var updating = false;
 	    	
 			var scrollEvent = window.document.addEventListener("scroll", function (e) {
 
 				if(debounce != undefined) {
 
-					clearTimeout(debounce);
+				//	clearTimeout(debounce);
+				} else {
+
 				}
 
-				debounce = setTimeout(function () {
+			
 
-					update();
+				if(updating == false) {
 
-				}, 100);
+					updating = true;
+
+					debounce = setTimeout(function () {
+
+						update();
+
+						updating = false;
+
+					}, 200);
+
+
+
+				}
+
 
 			});
 
@@ -1733,11 +1836,18 @@ angular
 				}
 
 
-
 			}
 
 
 			function checkVisible(elm) {
+
+				if(elm == undefined) {
+
+					console.log('element undefined');
+					return;
+
+				}
+
 				var rect = elm.getBoundingClientRect();
 				var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
 				return !(rect.top < 0 || rect.top - viewHeight >= 0);
@@ -1745,6 +1855,8 @@ angular
 
 
 			$scope.$on('$destroy', function () {
+
+				console.log('destroy')
 
 				window.document.removeEventListener("scroll", scrollEvent);
 
@@ -1790,15 +1902,11 @@ angular
 				}
 				
 
-
-
 			}
 
 			function show () {
 
-
 				$element[0].style.opacity = "1";
-
 
 				if(!shown) {
 
@@ -1821,23 +1929,11 @@ angular
 
 					//$element[0].style.display = "block";
 
-
-					//visibility: hidden;
-						//opacity: 0;
-						//transition: visibility 0s 2s, opacity 2s linear;
-
 					shown = true;
 
-					
 				}
 
-
-
-
-
 			}
-
-
 
 	    }
 
@@ -2025,6 +2121,86 @@ angular
         }
 	}
 }]);
+window.nivelConfiguration = {
+
+}
+
+
+var language = localStorage.getItem("language");
+
+if(language == undefined) {
+
+    localStorage.setItem("language", navigator.language);
+
+    window.nivelConfiguration.language = navigator.language;
+
+} else {
+
+    window.nivelConfiguration.language = language;
+
+}
+
+
+if(nivelConfiguration.language.indexOf("fr") != -1) {
+
+    window.nivelConfiguration.lang = 'fr';
+
+} else {
+
+    window.nivelConfiguration.lang = 'en';
+
+}
+
+
+
+
+var style = document.createElement('style');
+style.innerHTML =
+    '[lang=!'+window.nivelConfiguration.lang+'] { display:none;}';
+
+
+// Get the first script tag
+var ref = document.querySelector('script');
+
+// Insert our new styles before the first script tag
+ref.parentNode.insertBefore(style, ref);
+
+
+console.log(window.nivelConfiguration.language);
+
+
+
+angular
+   .module('nivel')
+   .service('language', function () {
+
+   		var self = this;
+
+   		//default language
+   		this.lang = 'en';
+
+
+
+   		if(nivelConfiguration.language.indexOf("fr") != -1) {
+
+   			this.lang = 'fr';
+
+   		}
+
+
+   		this.add = function(){
+
+
+   		};
+
+   		this.remove = function () {
+
+   		}
+
+
+
+   });
+
 
 angular
    .module('nivel')

@@ -29,19 +29,35 @@ angular
 	    	update();
 
 	    	var debounce;
+	    	var updating = false;
 	    	
 			var scrollEvent = window.document.addEventListener("scroll", function (e) {
 
 				if(debounce != undefined) {
 
-					clearTimeout(debounce);
+				//	clearTimeout(debounce);
+				} else {
+
 				}
 
-				debounce = setTimeout(function () {
+			
 
-					update();
+				if(updating == false) {
 
-				}, 100);
+					updating = true;
+
+					debounce = setTimeout(function () {
+
+						update();
+
+						updating = false;
+
+					}, 200);
+
+
+
+				}
+
 
 			});
 
@@ -145,11 +161,18 @@ angular
 				}
 
 
-
 			}
 
 
 			function checkVisible(elm) {
+
+				if(elm == undefined) {
+
+					console.log('element undefined');
+					return;
+
+				}
+
 				var rect = elm.getBoundingClientRect();
 				var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
 				return !(rect.top < 0 || rect.top - viewHeight >= 0);
@@ -157,6 +180,8 @@ angular
 
 
 			$scope.$on('$destroy', function () {
+
+				console.log('destroy')
 
 				window.document.removeEventListener("scroll", scrollEvent);
 
@@ -202,15 +227,11 @@ angular
 				}
 				
 
-
-
 			}
 
 			function show () {
 
-
 				$element[0].style.opacity = "1";
-
 
 				if(!shown) {
 
@@ -233,23 +254,11 @@ angular
 
 					//$element[0].style.display = "block";
 
-
-					//visibility: hidden;
-						//opacity: 0;
-						//transition: visibility 0s 2s, opacity 2s linear;
-
 					shown = true;
 
-					
 				}
 
-
-
-
-
 			}
-
-
 
 	    }
 
