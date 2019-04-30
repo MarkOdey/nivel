@@ -50,9 +50,15 @@ console.log(window.nivelConfiguration.language);
 
 angular
    .module('nivel')
-   .service('language', function () {
+   .service('Language', [ 'Emitter', function (Emitter) {
 
-   		var self = this;
+
+
+      Emitter.apply(this, arguments);
+
+      var self = this;
+
+      this.register('changed');     
 
    		//default language
    		this.lang = 'en';
@@ -64,6 +70,16 @@ angular
    			this.lang = 'fr';
 
    		}
+
+      this.set = function (lang) {
+
+        console.log(lang);
+        
+        this.lang = lang;
+
+        this.emit('changed', lang);
+
+      }
 
 
    		this.add = function(){
@@ -77,4 +93,4 @@ angular
 
 
 
-   });
+   }]);

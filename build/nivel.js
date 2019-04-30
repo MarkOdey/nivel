@@ -1593,44 +1593,49 @@ angular
 
 angular
    .module('nivel')
-   .directive('lang', [ 'language', function (language) {
+   .directive('lang', [ 'Language', '$compile', function (Language, $compile) {
 
       return {
         restrict: 'A',
+        scope : {
+
+        },
 
         link: function ($scope, $element, $attr) {
 
 
-            $scope.html = "";
-            $scope.lang;
+            var html = "";
+            var lang;
 
             if($attr.lang != undefined) {
 
-                $scope.lang = $attr.lang;
+                lang = $attr.lang;
 
             }
 
 
-            $scope.html = $element.html();
+            html = $element.html();
 
             var render = function () {
 
-                if(language.lang == $scope.lang) {
+                if(Language.lang == lang) {
 
                     var children = $element.children();
 
                     if(children.length == 0) {
 
-                        $element.append($scope.html);
+                        $element.append(html);
+                        var scope = $scope.$new(true);
+                        var compiled = $compile($element[0])(scope);
 
                     }
 
                 } else {
 
                     console.log('destroying');
-
-                    $scope.$destroy();
                     $element.empty();
+                    $scope.$destroy();
+
 
                 }
             }
@@ -1638,6 +1643,13 @@ angular
             render();
 
 
+
+            Language.on('changed', function (lang) {
+
+                console.log('rerendering');
+
+                render();
+            });
 
 
             console.log($attr);
@@ -1652,7 +1664,7 @@ angular
 
 angular
    .module('nivel')
-   .directive('selectLang', [ 'language', function (language) {
+   .directive('selectLang', [ 'Language', function (Language) {
 
       return {
         restrict: 'A',
@@ -1664,7 +1676,7 @@ angular
 
                 $element.on('click', function () {
 
-                    language.set($attr.selectLang);
+                    Language.set($attr.selectLang);
 
                 });
             }
@@ -2121,6 +2133,140 @@ angular
         }
 	}
 }]);
+
+angular.module('nivel').factory('Emitter', ['$log', function($log) {
+
+    var Emitter = function() {
+
+        var self = this;
+
+        /**
+         * Stack of registered event.
+         * @type {Object}
+         */
+        self.events = {};
+
+        /**
+         * Registers a new emitter.
+         * @param  {String} event The key reference of the event registered
+         */
+        self.register = function(event) {
+
+            if (Array.isArray(event)) {
+
+                for (var i in event) {
+
+                    if(!self.has(event[i])) {
+                        
+                        self.events[event[i]] = [];
+
+                    }
+
+                }
+
+            } else {
+
+                if(!self.has(event)) {
+
+                    self.events[event] = [];
+
+                }
+
+            }
+
+        };
+
+        /**
+         * Checks wether the object has a specific event registered.
+         */
+        self.has = function(event) {
+
+            if (self.events[event] != undefined) {
+                return true;
+            }
+
+            return false;
+        }
+
+        /**
+         * Registers an handler to the event.
+         * @param  {String}   event The event key to register to.
+         * @param  {Function} fn    The callback to fire.
+         * @return {Function}       The function reference.
+         */
+        self.on = function(event, fn) {
+
+            if (self.has(event) == false) {
+
+                self.register(event);
+
+                $log.error('Event "' + event + '" is not registered! At on emitter');
+            }
+
+            self.events[event].push(fn);
+
+            return fn;
+
+        };
+
+        /**
+         * Copy of the on event.
+         */
+        self.addEventListener = self.on;
+
+        /**
+         * Emits the event. 
+         * @param  {String} event "The event key to emit to."
+         * @param  {Object} obj   The payload passed in the callback.
+         */
+        self.emit = function(event, obj) {
+
+            if(obj == undefined) {
+              obj = {};
+            }
+
+            if (self.events[event] == undefined) {
+                $log.error('Event "' + event + '" is not registered! At on emitter');
+            }
+
+            for (var i in self.events[event]) {
+
+                self.events[event][i](obj);
+            }
+
+        };
+
+        /**
+         * [off description]
+         * @param  {String}   event "The event key to deregister the event."
+         * @param  {Function} fn    The callback reference.
+         */
+        self.off = function(event, fn) {
+
+            if (self.events[event] == undefined) {
+                $log.error('Event "' + event + '" is not registered! At off emitter');
+            }
+
+            var index = self.events[event].indexOf(fn);
+
+            if (index != -1) {
+                self.events[event].splice(index, 1);
+            } else {
+                $log.error('Event "' + event + '" event callback not found in stack.');
+            }
+
+        };
+
+        /**
+         * This is a reference of off for flavor suport
+         */
+        self.removeEventListener= self.off;
+    }
+
+    return Emitter;
+
+}]);
+
 window.nivelConfiguration = {
 
 }
@@ -2172,9 +2318,15 @@ console.log(window.nivelConfiguration.language);
 
 angular
    .module('nivel')
-   .service('language', function () {
+   .service('Language', [ 'Emitter', function (Emitter) {
 
-   		var self = this;
+
+
+      Emitter.apply(this, arguments);
+
+      var self = this;
+
+      this.register('changed');     
 
    		//default language
    		this.lang = 'en';
@@ -2186,6 +2338,16 @@ angular
    			this.lang = 'fr';
 
    		}
+
+      this.set = function (lang) {
+
+        console.log(lang);
+        
+        this.lang = lang;
+
+        this.emit('changed', lang);
+
+      }
 
 
    		this.add = function(){
@@ -2199,7 +2361,7 @@ angular
 
 
 
-   });
+   }]);
 
 
 angular

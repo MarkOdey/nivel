@@ -2,44 +2,49 @@
 
 angular
    .module('nivel')
-   .directive('lang', [ 'language', function (language) {
+   .directive('lang', [ 'Language', '$compile', function (Language, $compile) {
 
       return {
         restrict: 'A',
+        scope : {
+
+        },
 
         link: function ($scope, $element, $attr) {
 
 
-            $scope.html = "";
-            $scope.lang;
+            var html = "";
+            var lang;
 
             if($attr.lang != undefined) {
 
-                $scope.lang = $attr.lang;
+                lang = $attr.lang;
 
             }
 
 
-            $scope.html = $element.html();
+            html = $element.html();
 
             var render = function () {
 
-                if(language.lang == $scope.lang) {
+                if(Language.lang == lang) {
 
                     var children = $element.children();
 
                     if(children.length == 0) {
 
-                        $element.append($scope.html);
+                        $element.append(html);
+                        var scope = $scope.$new(true);
+                        var compiled = $compile($element[0])(scope);
 
                     }
 
                 } else {
 
                     console.log('destroying');
-
-                    $scope.$destroy();
                     $element.empty();
+                    $scope.$destroy();
+
 
                 }
             }
@@ -47,6 +52,13 @@ angular
             render();
 
 
+
+            Language.on('changed', function (lang) {
+
+                console.log('rerendering');
+
+                render();
+            });
 
 
             console.log($attr);
@@ -61,7 +73,7 @@ angular
 
 angular
    .module('nivel')
-   .directive('selectLang', [ 'language', function (language) {
+   .directive('selectLang', [ 'Language', function (Language) {
 
       return {
         restrict: 'A',
@@ -73,7 +85,7 @@ angular
 
                 $element.on('click', function () {
 
-                    language.set($attr.selectLang);
+                    Language.set($attr.selectLang);
 
                 });
             }
