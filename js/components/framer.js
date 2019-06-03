@@ -12,7 +12,7 @@ angular
             cropheight:'@',
             width:'@',
             height:'@',
-            layout:'<',
+            layout:'@',
             centerx:'@',
             centery:'@',
             zoom:"@",
@@ -29,6 +29,8 @@ angular
             $scope.cropwidth = Number($scope.cropwidth);
             $scope.cropheight = Number($scope.cropheight);
 
+
+
             $scope.width = Number($scope.width);
             $scope.height = Number($scope.height);
 
@@ -44,6 +46,8 @@ angular
             elementStyle.top ='0px';
             elementStyle.width = '100%';
             elementStyle.height = '100%';
+
+            elementStyle.zIndex = "-1";
 
 
 
@@ -174,6 +178,9 @@ angular
                             } else if($scope.layout == "centered") {
 
                                 computeCenteredLayout(element);
+                            } else if ($scope.layout == "right") {
+
+                                computeRightLayout(element);
                             }
                             
                             if(typeof callback == 'function'){
@@ -213,6 +220,23 @@ angular
 
             resize();
 
+
+            var computed = false;
+
+
+            var interval = setInterval(function() {
+
+                if($element[0].offsetParent === null || computed == true ) {
+
+                } else {
+                    console.log('is visible')
+
+                    resize();
+                    computed = true;
+                }
+
+            }, 500);
+
             var computeCenteredLayout = function (element) {
 
                 var originW, originH;
@@ -238,6 +262,8 @@ angular
                 //Gets parent element width;
                 var parentW = $element[0].offsetWidth;
                 var parentH = $element[0].offsetHeight;
+
+                console.log(parentW, parentH)
 
 
                 var elementRatio = originH/originW;
@@ -273,21 +299,25 @@ angular
                 element.style.width = elementW+"px";
                 element.style.height = elementH+"px";
 
-
-
-
-                //console.log("centered element");
-
             }
 
+            var computeRightLayout = function (element) {
+
+                element.style.position = "absolute"
+                element.style.right ="0";
+                element.style.top = "0";
+                element.style.height= "100%";
+            }
 
 
             var computeNormalLayout = function (element) {
 
 
-
                 var parentW = $element[0].offsetWidth;
                 var parentH = $element[0].offsetHeight;
+
+                console.log(element.height);
+                console.log(element.width)
 
                 if(parentW/parentH > element.width/element.height) {
 
@@ -310,9 +340,6 @@ angular
                     element.style.top = parentH/2-element.height/2 + "px";
 
                 }
-
-
-
 
 
             }

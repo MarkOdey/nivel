@@ -175,7 +175,7 @@ angular
 
 				var rect = elm.getBoundingClientRect();
 				var viewHeight = Math.max(document.documentElement.clientHeight, window.innerHeight);
-				return !(rect.top < 0 || rect.top - viewHeight >= 0);
+				return !(rect.top + rect.height < 0 || rect.top - viewHeight >= 0);
 			}
 
 
