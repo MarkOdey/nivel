@@ -1,6 +1,6 @@
 angular
    .module('nivel')
-   .directive('gallery', [ '$timeout', 'resizer', function ($timeout, resizer) {
+   .directive('gallery', [ '$timeout', 'resizer', 'GalleryService', function ($timeout, resizer, GalleryService) {
   
       return {
         restrict: 'E',
@@ -8,103 +8,213 @@ angular
 
         scope : {
 
+            layout : "@",
+
+
+
         },
 
         link: function ($scope, $element, $attr, _, transclude) {
 
 
-
             transclude($scope, function(clone) {
                 
                 $element.append(clone);
+
+            
             
             });
 
 
-            //The active gallery item;
-            $scope.activeItem;
+            if($attr.id == undefined) {
 
-            var galleryItems = $element.find('[gallery-item]');
+                $scope.id = "gallery"+Math.round(Math.random()*100000);
+                
+
+            } else {
+
+                $scope.id = $attr.id;
+            }
+
+
+            $scope.items = [];
+
+
+            
+
+            $scope.$broadcast('gallery-instantiated', $scope);
 
             var index = 0;
 
             var timer;
         
-            var galleryLength = $element.find('[gallery-item]').length;
+    
+            $scope.$on('shown', function (e) {
+
+                var item = e.targetScope;
+
+                console.log(item);
+
+                for(var i in $scope.items) {
+
+                    if($scope.items[i].id != item.id) {
 
 
-            if(galleryLength <= 1) {
+                        $scope.items[i].hide();
 
-                $element.find('previous')[0].style.display = "none";
-                $element.find('next')[0].style.display = "none";
-            }
+                    } else {
+                        
+                        //The current index of the item is i;
+
+                        index = Number(i);
+
+                        //Element index 
+                        
+                        var width = $element.width();
 
 
-            $element.find('previous').bind('click', function () {
-                console.log('this is a test');
+                    }
 
-                previous();
+                }
+                
+                if($scope.layout == "slider") {
 
-            });
+                    $element[0].style.left= -index*$element.width() + "px";
 
-            $element.find('next').bind('click', function () {
-                console.log('this is a test');
 
-                next();
 
-            });
+                }
+
+
+                if($scope.layout == "carrousel") {
+
+                    var offsetLeft = 0;
+
+                    var parentWidth = $element.width();
+
+                    //We have the index of the active item;
+                    
+                    //We check the position of active item and determine if visible or not
+                    var id = $scope.items[index].id;
+                    var element = $element.find("#"+ id);
+
+                    console.log(element[0].offsetLeft);
+                    console.log($element[0].offsetLeft);
+
+
+                    if(element[0].offsetLeft >= -1*$element[0].offsetLeft &&
+                       element[0].offsetLeft + element.width() < parentWidth) {
+
+                        console.log('item is visible');
+                        
+
+                    } else if(element[0].offsetLeft <= -1*$element[0].offsetLeft){
+
+                        console.log('before');
+                        $element[0].style.left = -(element[0].offsetLeft) + "px";
+
+                    } else if(element[0].offsetLeft + element.width() > parentWidth) {
+                        
+                        console.log('after');
+                        $element[0].style.left = $element.width()-(element.width()+element[0].offsetLeft) + "px";
+
+                    }
+                    
+    
+
+
+                }
+
+            })
+
+
+            resizer.addEventListener('resize', function (callback) {
+                
+
+                render();
+
+                callback();
+
+            }, $element);
 
 
             var next = function () {
                 
-                index +=1;
+                index += 1;
 
-                index =  index%galleryItems.length;
+                index = index%$scope.items.length;
 
                 render();
 
             }
 
+            $scope.next = next;
 
             var previous = function () {
 
                 index -= 1;
 
-                index = (index+galleryItems.length)%galleryItems.length;
+                index = (index+$scope.items.length)%$scope.items.length;
 
                 render();
 
             }
 
-
+            $scope.previous = previous;
 
             var render = function () {
 
-                galleryItems = $element.find('[gallery-item]');
+                if($scope.layout == "slider" ||
+                   $scope.layout == "carrousel") {
 
-                console.log(galleryItems);
+                    console.log('slider');
+                    console.log($element.width());
+                    console.log($element.height());
 
-                galleryItems.each(function( i ) {
+                    $element.addClass('slider');
+
+                    console.log("rendering!!");
+
+                    var offsetLeft = 0;
+
+                    for(var i in $scope.items) {
+
+                        var id = $scope.items[i].id;
+
+                        var element =  $element.find("#"+id);
 
 
-                    if(index == i ) {
 
-                        galleryItems[i].style.visibility = 'visible';
-                        galleryItems[i].style.pointerEvents = 'auto';
+                        element[0].style.left = offsetLeft+"px";
+
+                        offsetLeft += element.width();
+
+                    }   
+
+                } 
+
+                for(var i in $scope.items) {
+
+
+
+                    if(index == i) {
+
+                        $scope.items[i].show();
 
                     } else {
 
-                        galleryItems[i].style.visibility = 'hidden';
-                        galleryItems[i].style.pointerEvents = 'none';
+                        $scope.items[i].hide();
 
                     }
-
-                });
-
+                }
 
             }
 
-            $scope.layout = "fit";
+            if($scope.layout == undefined) {
+                $scope.layout = "fit";
+            }
+
+
             $scope.fullscreen = false;
 
             $element.addClass('windowed');
@@ -186,6 +296,8 @@ angular
             }
 
 
+            //Adding gallery add scope.
+            GalleryService.add($scope);
 
             render();
 

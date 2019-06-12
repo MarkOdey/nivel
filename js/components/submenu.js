@@ -6,7 +6,8 @@ angular
 	    restrict: 'E',
 	    scope : {
 
-            target:"@"
+            target:"@",
+            event:"@"
 
 	    },
 	    link: function ($scope, $element, $attr) {
@@ -14,9 +15,15 @@ angular
 
             console.log($attr.target)
 
-            $element.on('click', function(e) {
 
-                console.log($attr.target);
+            if($scope.event == undefined) {
+
+                $scope.event = "click";
+            }
+
+            $element.on($scope.event, function(e) {
+
+               // console.log($attr.target);
 
                 var size = getWindowSize();
 
@@ -24,7 +31,7 @@ angular
 
 
                 //We check if the button is desktop friendly if so we evaluate width of the window.
-                if($attr.desktopfriendly == undefined || size.width > 860 ) {
+                if($attr.mobileonly == undefined || size.width > 860 ) {
 
                     submenu.show();
 
@@ -52,9 +59,9 @@ angular
 
 
 
-            if($attr.desktopfriendly != undefined) {
+            if($attr.mobileonly != undefined) {
 
-                $element.addClass("desktopfriendly");
+                $element.addClass("mobileonly");
 
                 
 
@@ -182,9 +189,6 @@ angular
         },
         link: function ($scope, $element, $attr) {
 
-            console.log($attr.id);
-
-
             /**
              * Gets the window size cross browwser
              * @return {object} size The size of the window.
@@ -200,7 +204,7 @@ angular
             }
 
 
-             /**
+            /**
              * Switching the menu according to window size.
              */
             var toggleMobileMenu = function () {
@@ -229,7 +233,7 @@ angular
 
                 $element.addClass("mobilefriendly");
 
-                window.document.addEventListener("scroll", function (e) {
+                window.addEventListener("resize", function (e) {
 
                     toggleMobileMenu();
 

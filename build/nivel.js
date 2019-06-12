@@ -1380,50 +1380,308 @@ angular
   };
 }]);angular
    .module('nivel')
-   .directive('galleryItem', [ '$timeout', function ($timeout) {
+   .directive('galleryItem', [ '$timeout', 'GalleryService', function ($timeout, GalleryService) {
   
       return {
         restrict: 'A',
 
+        scope : true,
+
         link: function ($scope, $element, $attr) {
 
-            console.log($scope);
+            $scope.gallery = {};
 
-            console.log($attr);
+            $scope.shown = false;
+
+
+            if($attr.id == undefined) {
+
+                $scope.id = "galleryItem"+Math.round(Math.random()*100000);
+                
+
+            } else {
+
+                $scope.id = $attr.id;
+            
+            }
+
+
+            $scope.$on('gallery-instantiated', function(gallery) {
+
+                console.log(gallery);
+
+
+               if($attr.gallery == undefined) {
+
+                  $scope.gallery = gallery.targetScope;
+
+                 
+               } else {
+
+                  if($attr.gallery == gallery.targetScope.id) {
+
+                     $scope.gallery = gallery.targetScope;
+
+
+                     console.log($scope.gallery);
+                  }
+
+               }
+
+
+               $scope.gallery.items.push($scope);
+               GalleryService.add($scope);
+            
+
+            });
+
+
+            $scope.show = function () {
+
+               $element.addClass('active');
+
+               $scope.shown = true;
+
+               $scope.$emit('shown', $scope);
+
+            }
+
+            $scope.hide = function  () {
+
+               $element.removeClass('active');
+
+               $scope.shown = false;
+
+               $scope.$emit('hidden', $scope);
+             
+            }
 
             $scope.$on('gallery-fullscreen', function (data) {
 
+               if(data.targetScope.fullscreen) {
 
-              if(data.targetScope.fullscreen) {
+                  $element.append("<div class='caption'>"+$attr.caption+"</div>");
 
-                $element.append("<div class='caption'>"+$attr.caption+"</div>");
+               } else {
 
-              } else {
+                  $element.find(".caption").remove();
 
-                $element.find(".caption").remove();
-
-
-              }
+               }
 
             })
 
-            /*window.addEventListener("resize", function() {
 
-            	$scope.$$childHead.layout = $scope.layout;
+            $scope.$emit('rendered');
 
-            	$scope.$$childHead.resize();
+         }
+      }
+   }
+]);
 
-            	console.log($scope.$$childHead.resize);
 
+angular
+   .module('nivel')
+   .directive('next', [ '$timeout', 'GalleryService', function ($timeout, GalleryService) {
+  
+      return {
+         restrict: 'A',
+         scope : true,
+
+         link: function ($scope, $element, $attr) {
+
+            var gallery = $scope.$parent;
+
+            if($attr.target != undefined) {
+
+               gallery = GalleryService.get($attr.target);
+
+            } else {
+
+               $scope.$on('gallery-instantiated', function(e) {
+
+                  gallery = e.targetScope;
+
+               });
+            
+            }
+
+            var getGallery = function () {
+               
+               if($attr.target != undefined) {
+
+                  gallery = GalleryService.get($attr.target);
+
+               }
+            
+
+            }
+
+
+            $element.on('click', function () {
+
+               getGallery();
+
+               gallery.next();
 
             });
-          */
+
+
+
+
+         }
+      }
+   }
+]);
+
+
+angular
+   .module('nivel')
+   .directive('previous', [ '$timeout', 'GalleryService', function ($timeout, GalleryService) {
+  
+      return {
+         restrict: 'A',
+         scope : true,
+
+         link: function ($scope, $element, $attr) {
+
+            var gallery = $scope.$parent;
+
+            if($attr.target != undefined) {
+
+               gallery = GalleryService.get($attr.target);
+
+            } else {
+
+               $scope.$on('gallery-instantiated', function(e) {
+
+                  gallery = e.targetScope;
+
+               });
+            
+            }
+
+            var getGallery = function () {
+               
+               if($attr.target != undefined) {
+
+                  gallery = GalleryService.get($attr.target);
+
+               }
+            
+
+            }
+
+
+            $element.on('click', function () {
+
+               getGallery();
+               gallery.previous();
+
+            });
+
+
+         }
+      }
+   }
+]);
+
+
+angular
+   .module('nivel')
+   .directive('goto', [ '$timeout', 'GalleryService', function ($timeout, GalleryService) {
+  
+      return {
+        restrict: 'AE',
+
+        scope : true,
+
+        link: function ($scope, $element, $attr) {
+
+            var item = GalleryService.get($attr.target);
+
+            $element.on('click', function () {
+
+               console.log('go to ', $attr.target);
+
+               item = GalleryService.get($attr.target);
+
+               console.log(item);
+
+               item.show();
+
+            });
+
+            console.log(item);
+
+            if(item != undefined) {
+
+               if(item.shown == true) {
+
+                  $element.addClass('selected');
+
+               }
+
+
+               item.$on('shown', function (e) {
+
+                  console.log('image changed');
+
+
+                  $element.addClass('selected');
+      
+
+
+               });
+
+
+               item.$on('hidden', function (e) {
+
+                  $element.removeClass('selected');
+
+               });
+
+            
+            } else {
+
+
+               $scope.$on('gallery-instantiated', function(e) {
+
+                  item = GalleryService.get($attr.target);                  
+
+                  item.$on('shown', function (e) {
+
+                     console.log('image changed');
+                     $element.addClass('selected');
+         
+                  });
+
+
+                  item.$on('hidden', function (e) {
+
+                     $element.removeClass('selected');
+
+                  });
+
+
+               });
+
+
+            }
+
+            
+
+
+
+
 
         }
-    }
-}]);angular
+
+      }
+
+   }]);
+angular
    .module('nivel')
-   .directive('gallery', [ '$timeout', 'resizer', function ($timeout, resizer) {
+   .directive('gallery', [ '$timeout', 'resizer', 'GalleryService', function ($timeout, resizer, GalleryService) {
   
       return {
         restrict: 'E',
@@ -1431,103 +1689,213 @@ angular
 
         scope : {
 
+            layout : "@",
+
+
+
         },
 
         link: function ($scope, $element, $attr, _, transclude) {
 
 
-
             transclude($scope, function(clone) {
                 
                 $element.append(clone);
+
+            
             
             });
 
 
-            //The active gallery item;
-            $scope.activeItem;
+            if($attr.id == undefined) {
 
-            var galleryItems = $element.find('[gallery-item]');
+                $scope.id = "gallery"+Math.round(Math.random()*100000);
+                
+
+            } else {
+
+                $scope.id = $attr.id;
+            }
+
+
+            $scope.items = [];
+
+
+            
+
+            $scope.$broadcast('gallery-instantiated', $scope);
 
             var index = 0;
 
             var timer;
         
-            var galleryLength = $element.find('[gallery-item]').length;
+    
+            $scope.$on('shown', function (e) {
+
+                var item = e.targetScope;
+
+                console.log(item);
+
+                for(var i in $scope.items) {
+
+                    if($scope.items[i].id != item.id) {
 
 
-            if(galleryLength <= 1) {
+                        $scope.items[i].hide();
 
-                $element.find('previous')[0].style.display = "none";
-                $element.find('next')[0].style.display = "none";
-            }
+                    } else {
+                        
+                        //The current index of the item is i;
+
+                        index = Number(i);
+
+                        //Element index 
+                        
+                        var width = $element.width();
 
 
-            $element.find('previous').bind('click', function () {
-                console.log('this is a test');
+                    }
 
-                previous();
+                }
+                
+                if($scope.layout == "slider") {
 
-            });
+                    $element[0].style.left= -index*$element.width() + "px";
 
-            $element.find('next').bind('click', function () {
-                console.log('this is a test');
 
-                next();
 
-            });
+                }
+
+
+                if($scope.layout == "carrousel") {
+
+                    var offsetLeft = 0;
+
+                    var parentWidth = $element.width();
+
+                    //We have the index of the active item;
+                    
+                    //We check the position of active item and determine if visible or not
+                    var id = $scope.items[index].id;
+                    var element = $element.find("#"+ id);
+
+                    console.log(element[0].offsetLeft);
+                    console.log($element[0].offsetLeft);
+
+
+                    if(element[0].offsetLeft >= -1*$element[0].offsetLeft &&
+                       element[0].offsetLeft + element.width() < parentWidth) {
+
+                        console.log('item is visible');
+                        
+
+                    } else if(element[0].offsetLeft <= -1*$element[0].offsetLeft){
+
+                        console.log('before');
+                        $element[0].style.left = -(element[0].offsetLeft) + "px";
+
+                    } else if(element[0].offsetLeft + element.width() > parentWidth) {
+                        
+                        console.log('after');
+                        $element[0].style.left = $element.width()-(element.width()+element[0].offsetLeft) + "px";
+
+                    }
+                    
+    
+
+
+                }
+
+            })
+
+
+            resizer.addEventListener('resize', function (callback) {
+                
+
+                render();
+
+                callback();
+
+            }, $element);
 
 
             var next = function () {
                 
-                index +=1;
+                index += 1;
 
-                index =  index%galleryItems.length;
+                index = index%$scope.items.length;
 
                 render();
 
             }
 
+            $scope.next = next;
 
             var previous = function () {
 
                 index -= 1;
 
-                index = (index+galleryItems.length)%galleryItems.length;
+                index = (index+$scope.items.length)%$scope.items.length;
 
                 render();
 
             }
 
-
+            $scope.previous = previous;
 
             var render = function () {
 
-                galleryItems = $element.find('[gallery-item]');
+                if($scope.layout == "slider" ||
+                   $scope.layout == "carrousel") {
 
-                console.log(galleryItems);
+                    console.log('slider');
+                    console.log($element.width());
+                    console.log($element.height());
 
-                galleryItems.each(function( i ) {
+                    $element.addClass('slider');
+
+                    console.log("rendering!!");
+
+                    var offsetLeft = 0;
+
+                    for(var i in $scope.items) {
+
+                        var id = $scope.items[i].id;
+
+                        var element =  $element.find("#"+id);
 
 
-                    if(index == i ) {
 
-                        galleryItems[i].style.visibility = 'visible';
-                        galleryItems[i].style.pointerEvents = 'auto';
+                        element[0].style.left = offsetLeft+"px";
+
+                        offsetLeft += element.width();
+
+                    }   
+
+                } 
+
+                for(var i in $scope.items) {
+
+
+
+                    if(index == i) {
+
+                        $scope.items[i].show();
 
                     } else {
 
-                        galleryItems[i].style.visibility = 'hidden';
-                        galleryItems[i].style.pointerEvents = 'none';
+                        $scope.items[i].hide();
 
                     }
-
-                });
-
+                }
 
             }
 
-            $scope.layout = "fit";
+            if($scope.layout == undefined) {
+                $scope.layout = "fit";
+            }
+
+
             $scope.fullscreen = false;
 
             $element.addClass('windowed');
@@ -1609,6 +1977,8 @@ angular
             }
 
 
+            //Adding gallery add scope.
+            GalleryService.add($scope);
 
             render();
 
@@ -1712,7 +2082,80 @@ angular
         }
 
     }
-}]);
+}]);/**
+ * Sets the size of the element according to a target ratio.
+ * 
+ */
+angular
+   .module('nivel')
+   .directive('ratio', [ 'resizer', function (resizer) {
+
+        return {
+            restrict: 'A',
+            scope : {
+                width:'@',
+                height:'@',
+                layout:"@"
+            },
+            link: function ($scope, $element, $attr) {
+
+                if($scope.layout == undefined) {
+
+                    $scope.layout = "width"
+                }
+
+
+                var resize =  function(callback) {
+
+                    console.log("ratio")
+
+                    if($scope.layout == "width") {
+
+
+                        var width = 4;
+                        var height = 3;
+
+                        if($scope.width != undefined) {
+
+                            width = Number($scope.width);
+                        }
+
+                        if($scope.height != undefined) {
+
+                            height = Number($scope.height);
+
+                        }
+
+                        $element[0].style.position="relative";
+                        $element[0].style.width="100%";
+
+
+                        $element[0].style.height= (height/width)*$element.width() + "px";
+
+
+                        if(callback != undefined) {
+                            callback();
+
+                        }
+
+                    } 
+                }
+
+
+                resizer.addEventListener('resize', function (callback) {
+
+                    resize(callback);
+
+                }, $element[0]);
+
+
+                resize();
+
+            }
+        }
+
+    }]);
+
 
 angular
 .module('nivel')
@@ -2123,7 +2566,8 @@ angular
 	    restrict: 'E',
 	    scope : {
 
-            target:"@"
+            target:"@",
+            event:"@"
 
 	    },
 	    link: function ($scope, $element, $attr) {
@@ -2131,9 +2575,15 @@ angular
 
             console.log($attr.target)
 
-            $element.on('click', function(e) {
 
-                console.log($attr.target);
+            if($scope.event == undefined) {
+
+                $scope.event = "click";
+            }
+
+            $element.on($scope.event, function(e) {
+
+               // console.log($attr.target);
 
                 var size = getWindowSize();
 
@@ -2141,7 +2591,7 @@ angular
 
 
                 //We check if the button is desktop friendly if so we evaluate width of the window.
-                if($attr.desktopfriendly == undefined || size.width > 860 ) {
+                if($attr.mobileonly == undefined || size.width > 860 ) {
 
                     submenu.show();
 
@@ -2169,9 +2619,9 @@ angular
 
 
 
-            if($attr.desktopfriendly != undefined) {
+            if($attr.mobileonly != undefined) {
 
-                $element.addClass("desktopfriendly");
+                $element.addClass("mobileonly");
 
                 
 
@@ -2299,9 +2749,6 @@ angular
         },
         link: function ($scope, $element, $attr) {
 
-            console.log($attr.id);
-
-
             /**
              * Gets the window size cross browwser
              * @return {object} size The size of the window.
@@ -2317,7 +2764,7 @@ angular
             }
 
 
-             /**
+            /**
              * Switching the menu according to window size.
              */
             var toggleMobileMenu = function () {
@@ -2346,7 +2793,7 @@ angular
 
                 $element.addClass("mobilefriendly");
 
-                window.document.addEventListener("scroll", function (e) {
+                window.addEventListener("resize", function (e) {
 
                     toggleMobileMenu();
 
@@ -2676,6 +3123,68 @@ angular.module('nivel').factory('Emitter', ['$log', function($log) {
     return Emitter;
 
 }]);
+
+
+angular
+   .module('nivel')
+   .service('GalleryService', function () {
+
+      var items = [];
+
+
+      var index = 0;
+
+
+      this.next = function () {
+                
+         index += 1;
+
+         index = index%galleryItems.length;
+
+         render();
+
+      }
+
+
+      var previous = function () {
+
+         index -= 1;
+
+         index = (index+galleryItems.length)%galleryItems.length;
+
+         render();
+
+      }
+
+      this.add = function  (payload) {
+
+         items.push(payload);
+
+      }
+
+      this.remove = function () {
+
+         delete items[key];
+      }
+
+      this.get = function (itemId) {
+
+
+         for(var i in items) {
+
+            if(items[i].id == itemId) {
+
+               return items[i];
+            }
+
+         }
+
+         return items[itemId];
+
+      }
+
+   });
+
 
 window.nivelConfiguration = {
 
