@@ -144,7 +144,7 @@ angular
 
                             
                             console.log('this fires');
-                            size += Math.abs(max-size)/cycle;
+                            //size += Math.abs(max-size)/cycle;
 
                         } else {
 
