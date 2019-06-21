@@ -757,6 +757,8 @@ angular
    
         link: function ($scope, $element, $attr) {
 
+            var scope = $scope;
+
             if($scope.minsize == undefined) {
                 $scope.minsize = 36;
             }
@@ -765,9 +767,11 @@ angular
                 $scope.maxsize = 80;
             }
 
+            $scope.maxsize = Number($scope.maxsize);
+
             if($scope.step == undefined) {
 
-                $scope.step = 3;
+                $scope.step = 4;
             }
 
 
@@ -850,8 +854,8 @@ angular
 
                     var font = $scope.maxsize + "px";
 
-                    var min = Number($scope.minsize);
-                    var max = Number($scope.maxsize);
+                    var min = Number(scope.minsize);
+                    var max = Number(scope.maxsize);
 
                     $element[0].style.fontSize = font;
 
@@ -881,8 +885,8 @@ angular
                         if(parentHeight > height && parentWidth > width) {
 
                             
-                           // console.log('this fires');
-                            //size += Math.abs(max-size)/cycle;
+                            console.log('this fires');
+                            size += Math.abs(max-size)/cycle;
 
                         } else {
 
@@ -896,7 +900,15 @@ angular
 
 
 
+
+
                     }
+
+                    $element[0].style.fontSize = font;
+
+
+
+
 
                     if(typeof callback == 'function'){
 
@@ -982,7 +994,7 @@ angular
             elementStyle.width = '100%';
             elementStyle.height = '100%';
 
-            elementStyle.zIndex = "-1";
+           // elementStyle.zIndex = "-1";
 
 
 
@@ -2945,6 +2957,110 @@ angular
 
 
 }]);
+
+
+angular
+   .module('nivel')
+   .directive('toggler', [ function () {
+
+      return {
+         restrict: 'A',
+
+
+         link: function ($scope, $element, $attr) {
+
+
+
+            if($attr.if == undefined || $attr.if == "" || $attr.target == undefined || $attr.target == "") {
+
+               return;
+
+            }
+
+
+            console.log($attr);
+
+            var targets = [];
+
+            //Breaking the target for each elements
+            if($attr.target.indexOf("||") != -1) {
+
+               
+
+               targets = $attr.target.split("||");
+
+
+            } else {
+
+
+               targets.push($attr.target);
+
+            }
+
+
+            $element.on('change', function () {
+
+               check();
+
+
+            });
+
+
+            var expectedValue = $attr.if;
+
+            var check = function () {
+
+               console.log('checking');
+               if(expectedValue == $element[0].value ) {
+
+                  show();
+
+               } else {
+                  hide();
+               }
+
+            }
+
+
+            var show = function () {
+
+
+               for(var i in targets) {
+
+                  var id = targets[i];
+
+                  $("#"+id+$attr.salt).show();
+
+
+               }
+
+            }
+
+
+
+            var hide = function () {
+
+
+               for(var i in targets) {
+
+                  var id = targets[i];
+
+                  $("#"+id+$attr.salt).hide();
+
+               }
+
+            }
+
+            //Initial check pass.
+
+            check();
+
+
+         }
+
+      }
+   }
+]);
 
 angular
    .module('nivel')

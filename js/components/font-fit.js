@@ -15,6 +15,8 @@ angular
    
         link: function ($scope, $element, $attr) {
 
+            var scope = $scope;
+
             if($scope.minsize == undefined) {
                 $scope.minsize = 36;
             }
@@ -23,9 +25,11 @@ angular
                 $scope.maxsize = 80;
             }
 
+            $scope.maxsize = Number($scope.maxsize);
+
             if($scope.step == undefined) {
 
-                $scope.step = 3;
+                $scope.step = 4;
             }
 
 
@@ -108,8 +112,8 @@ angular
 
                     var font = $scope.maxsize + "px";
 
-                    var min = Number($scope.minsize);
-                    var max = Number($scope.maxsize);
+                    var min = Number(scope.minsize);
+                    var max = Number(scope.maxsize);
 
                     $element[0].style.fontSize = font;
 
@@ -139,8 +143,8 @@ angular
                         if(parentHeight > height && parentWidth > width) {
 
                             
-                           // console.log('this fires');
-                            //size += Math.abs(max-size)/cycle;
+                            console.log('this fires');
+                            size += Math.abs(max-size)/cycle;
 
                         } else {
 
@@ -154,7 +158,15 @@ angular
 
 
 
+
+
                     }
+
+                    $element[0].style.fontSize = font;
+
+
+
+
 
                     if(typeof callback == 'function'){
 

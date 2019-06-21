@@ -47,7 +47,7 @@ angular
             elementStyle.width = '100%';
             elementStyle.height = '100%';
 
-            elementStyle.zIndex = "-1";
+           // elementStyle.zIndex = "-1";
 
 
 
