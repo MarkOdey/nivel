@@ -99,6 +99,64 @@ angular
 ]);
 
 
+
+angular
+   .module('nivel')
+   .directive('fullscreen', [ '$timeout', 'GalleryService', function ($timeout, GalleryService) {
+  
+      return {
+         restrict: 'A',
+         scope : true,
+
+         link: function ($scope, $element, $attr) {
+
+            var gallery = $scope.$parent;
+
+            if($attr.target != undefined) {
+
+               gallery = GalleryService.get($attr.target);
+
+            } else {
+
+               $scope.$on('gallery-instantiated', function(e) {
+
+                  gallery = e.targetScope;
+
+               });
+            
+            }
+
+            var getGallery = function () {
+               
+               if($attr.target != undefined) {
+
+                  gallery = GalleryService.get($attr.target);
+
+               }
+            
+
+            }
+
+
+            $element.on('click', function () {
+
+               console.log('this is a test.')
+               getGallery();
+
+               gallery.openFullScreen();
+
+            });
+
+
+
+
+         }
+      }
+   }
+]);
+
+
+
 angular
    .module('nivel')
    .directive('next', [ '$timeout', 'GalleryService', function ($timeout, GalleryService) {

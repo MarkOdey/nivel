@@ -9,6 +9,7 @@ angular
         scope : {
 
             layout : "@",
+            autoSlide : "@"
 
 
 
@@ -17,13 +18,26 @@ angular
         link: function ($scope, $element, $attr, _, transclude) {
 
 
+            var scope = $scope;
+
+
             transclude($scope, function(clone) {
                 
-                $element.append(clone);
+               $element.append(clone);
 
-            
-            
             });
+
+            if($scope.autoSlide != undefined) {
+
+               window.setInterval(function() {
+
+                  next();
+
+                  $scope.$apply();
+
+               }, Number($scope.autoSlide));
+
+            }
 
 
             if($attr.id == undefined) {
@@ -39,23 +53,15 @@ angular
 
             $scope.items = [];
 
-
-            
-
             $scope.$broadcast('gallery-instantiated', $scope);
 
             var index = 0;
 
             var timer;
-        
-    
-            $scope.$on('shown', function (e) {
 
-                var item = e.targetScope;
+            var positionGalleryItem =  function (item) {
 
-                console.log(item);
-
-                for(var i in $scope.items) {
+               for(var i in $scope.items) {
 
                     if($scope.items[i].id != item.id) {
 
@@ -75,18 +81,24 @@ angular
 
                     }
 
-                }
+               }
+
+
+               var slider = $element.find('[slider]');
+
+
+
                 
-                if($scope.layout == "slider") {
+               if($scope.layout == "slider") {
 
-                    $element[0].style.left= -index*$element.width() + "px";
+                  ////console.log($element.width());
+
+                  slider[0].style.left= -index*$element.width() + "px";
+
+               }
 
 
-
-                }
-
-
-                if($scope.layout == "carrousel") {
+               if($scope.layout == "carrousel") {
 
                     var offsetLeft = 0;
 
@@ -98,44 +110,45 @@ angular
                     var id = $scope.items[index].id;
                     var element = $element.find("#"+ id);
 
-                    console.log(element[0].offsetLeft);
-                    console.log($element[0].offsetLeft);
+                    ////console.log(element[0].offsetLeft);
+                    ////console.log($element[0].offsetLeft);
 
 
-                    if(element[0].offsetLeft >= -1*$element[0].offsetLeft &&
+                    if(element[0].offsetLeft >= -1*slider[0].offsetLeft &&
                        element[0].offsetLeft + element.width() < parentWidth) {
 
-                        console.log('item is visible');
+                        ////console.log('item is visible');
                         
 
-                    } else if(element[0].offsetLeft <= -1*$element[0].offsetLeft){
+                    } else if(element[0].offsetLeft <= -1*slider[0].offsetLeft){
 
-                        console.log('before');
-                        $element[0].style.left = -(element[0].offsetLeft) + "px";
+                        ////console.log('before');
+                        slider[0].style.left = -(element[0].offsetLeft) + "px";
 
                     } else if(element[0].offsetLeft + element.width() > parentWidth) {
                         
-                        console.log('after');
-                        $element[0].style.left = $element.width()-(element.width()+element[0].offsetLeft) + "px";
+                        ////console.log('after');
+                        slider[0].style.left = slider.width()-(element.width()+element[0].offsetLeft) + "px";
 
                     }
                     
     
+               }
+
+            }
+        
+    
+            $scope.$on('shown', function (e) {
 
 
-                }
+               var item = e.targetScope;
+
+
+               positionGalleryItem(item);
 
             })
 
 
-            resizer.addEventListener('resize', function (callback) {
-                
-
-                render();
-
-                callback();
-
-            }, $element);
 
 
             var next = function () {
@@ -164,51 +177,88 @@ angular
 
             var render = function () {
 
-                if($scope.layout == "slider" ||
-                   $scope.layout == "carrousel") {
+               if(scope.layout == "slider" || scope.layout == "carrousel") {
 
-                    console.log('slider');
-                    console.log($element.width());
-                    console.log($element.height());
+                  var slider = $element.find('[slider]');
 
-                    $element.addClass('slider');
+                  //We check if slider element exists.
+                  if(slider.length == 0) {
 
-                    console.log("rendering!!");
+                     slider=$('<div slider style="position:absolute;width:100%;height:100%;"></div>');
 
-                    var offsetLeft = 0;
+                     $element.append(slider);
 
-                    for(var i in $scope.items) {
+                     console.log('slider doesnt exist');
 
-                        var id = $scope.items[i].id;
+                     //Adding elements in slider
+                     for(var i in scope.items) {
+
+                        var id = scope.items[i].id;
 
                         var element =  $element.find("#"+id);
 
+                        slider.append(element);
+
+                     }   
+
+                        
+
+                  }
+
+                  ////console.log('slider');
+                  ////console.log($element.width());
+                  ////console.log($element.height());
 
 
-                        element[0].style.left = offsetLeft+"px";
 
-                        offsetLeft += element.width();
+                  ////console.log("rendering!!");
 
-                    }   
+                  var offsetLeft = 0;
 
-                } 
+                  for(var i in scope.items) {
 
-                for(var i in $scope.items) {
+                     var id = scope.items[i].id;
+
+                     var element =  $element.find("#"+id);
 
 
+
+                     element[0].style.left = offsetLeft+"px";
+
+                     offsetLeft += element.width();
+
+                  }   
+
+               } 
+
+               for(var i in scope.items) {
 
                     if(index == i) {
 
-                        $scope.items[i].show();
+                        scope.items[i].show();
 
                     } else {
 
-                        $scope.items[i].hide();
+                        scope.items[i].hide();
 
                     }
-                }
+               
+               }
+
+               console.log($element.width());
+
+               if(scope.layout == "slider") {
+
+                  var slider = $element.find('[slider]');
+
+                  slider[0].style.left= -index*$element.width() + "px";
+
+               }
+
 
             }
+
+
 
             if($scope.layout == undefined) {
                 $scope.layout = "fit";
@@ -221,65 +271,68 @@ angular
 
             $scope.setFullScreen = function (bool) {
 
-                if(bool == true) {
+               if(bool == true) {
 
 
 
-                    $element.addClass('fullscreen');
+                  $element.addClass('fullscreen');
 
-                    $element.removeClass('windowed');
-
-
-                    console.log('fullscreen');
-
-                    $scope.layout = "normal";
-                    $scope.fullscreen = true;
+                  $element.removeClass('windowed');
 
 
-                    $element[0].style.zIndex = "100";
-                    $element[0].style.position = "fixed";
-                    $element[0].style.top = "0px";
-                    $element[0].style.left = "0px";
-                    $element[0].style.width = "100%";
-                    $element[0].style.height = "100%";
-                    $element[0].style.backgroundColor="#222";
+                  ////console.log('fullscreen');
 
-                    resizer.reset();
+                  //$scope.layout = "normal";
+                  $scope.fullscreen = true;
 
 
-                    window.dispatchEvent(new Event("resize"));
+                  $element[0].style.zIndex = "100";
+                  $element[0].style.position = "fixed";
+                  $element[0].style.top = "0px";
+                  $element[0].style.left = "0px";
+                  $element[0].style.width = "100%";
+                  $element[0].style.height = "100%";
+
+
+                  resizer.reset();
+
+
+                  window.dispatchEvent(new Event("resize"));
 
 
 
-                } else {
+               } else {
 
-                    console.log('not fullscreen');
-
-
-                    $element.removeClass('fullscreen');
-
-                    $element.addClass('windowed');
-
-                    
-                    $scope.layout = "fit";
-                    $scope.fullscreen = false;
-
-                    $element[0].style.zIndex = "";
-                    $element[0].style.position = "absolute";
-                    $element[0].style.top = "0px";
-                    $element[0].style.left = "0px";
-                    $element[0].style.width = "100%";
-                    $element[0].style.height = "100%";
-                    $element[0].style.backgroundColor="";
+                  //console.log('not fullscreen');
 
 
-                    resizer.reset();
+                  $element.removeClass('fullscreen');
 
-                    window.dispatchEvent(new Event("resize"));
+                  $element.addClass('windowed');
 
-                }
 
-                $scope.$broadcast('gallery-fullscreen', $scope);
+                  //$scope.layout = "fit";
+                  $scope.fullscreen = false;
+
+                  $element[0].style.zIndex = "";
+                  $element[0].style.position = "absolute";
+                  $element[0].style.top = "0px";
+                  $element[0].style.left = "0px";
+                  $element[0].style.width = "100%";
+                  $element[0].style.height = "100%";
+
+
+                  resizer.reset();
+
+                  window.dispatchEvent(new Event("resize"));
+
+               }
+
+               render();
+
+               positionGalleryItem($scope.items[index]);
+
+               $scope.$broadcast('gallery-fullscreen', $scope);
 
 
             }

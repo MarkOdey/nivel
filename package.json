@@ -26,7 +26,6 @@
   "bundleDependencies": false,
   "dependencies": {
     "angular": "^1.7.5",
-    "angularjs": "0.0.1",
     "moment": "^2.18.1",
     "perfect-scrollbar": "^0.7.1"
   },

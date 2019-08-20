@@ -1,15 +1,19 @@
 
-window.nivelConfiguration = {
+
+if(window.nivelConfiguration == undefined) {
+
+
+    window.nivelConfiguration = {
+
+    }
 
 }
-
 
 var language = localStorage.getItem("language");
 
 if(language == undefined) {
 
     localStorage.setItem("language", navigator.language);
-
     window.nivelConfiguration.language = navigator.language;
 
 } else {
@@ -30,8 +34,6 @@ if(nivelConfiguration.language.indexOf("fr") != -1) {
 }
 
 
-
-
 var style = document.createElement('style');
 style.innerHTML =
     '[lang=!'+window.nivelConfiguration.lang+'] { display:none;}';
@@ -44,9 +46,6 @@ var ref = document.querySelector('script');
 ref.parentNode.insertBefore(style, ref);
 
 
-console.log(window.nivelConfiguration.language);
-
-
 
 angular
    .module('nivel')
@@ -54,42 +53,42 @@ angular
 
 
 
-      Emitter.apply(this, arguments);
+        Emitter.apply(this, arguments);
 
-      var self = this;
+        var self = this;
 
-      this.register('changed');     
+        this.register('changed');     
 
-   		//default language
-   		this.lang = 'en';
+        	//default language
+        	this.lang = 'en';
 
 
 
-   		if(nivelConfiguration.language.indexOf("fr") != -1) {
+        	if(nivelConfiguration.language.indexOf("fr") != -1) {
 
-   			this.lang = 'fr';
+        		this.lang = 'fr';
 
-   		}
+        	}
 
-      this.set = function (lang) {
+        this.set = function (lang) {
 
         console.log(lang);
-        
+
         this.lang = lang;
 
         this.emit('changed', lang);
 
-      }
+        }
 
 
-   		this.add = function(){
+    	this.add = function(){
 
 
-   		};
+    	};
 
-   		this.remove = function () {
+    	this.remove = function () {
 
-   		}
+    	}
 
 
 

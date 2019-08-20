@@ -100,4 +100,114 @@ angular.module('templates').run(['$templateCache', function($templateCache) {
     "</form>"
   );
 
+
+  $templateCache.put('js/partials/dropdown-toggler.html',
+    "\n" +
+    "<div class=\"dropdown\">   \n" +
+    "\n" +
+    "\n" +
+    "    <button class=\"btn form-control  dropdown-toggle\" type=\"button\" ng-click=\"openDropdown()\">\n" +
+    "        \n" +
+    "        {{value}}\n" +
+    "    </button>\n" +
+    "\n" +
+    "\n" +
+    "    <div ng-class=\"{ show : showDropDown }\" class=\"dropdown-menu\" >\n" +
+    "\n" +
+    "\n" +
+    "        <ng-transclude></ng-transclude>\n" +
+    "\n" +
+    "    </div>\n" +
+    "\n" +
+    "\n" +
+    "</div>\n" +
+    "\n"
+  );
+
+
+  $templateCache.put('js/partials/file-lister-item.html',
+    "\n" +
+    "\n" +
+    "<div class=\"border-bottom row p-2\">\n" +
+    "\n" +
+    "    <div class=\"col-md-6 col-sm-12\">\n" +
+    "    	<span class=\"icon-file-o\" ></span>&nbsp;{{data.name}} \n" +
+    "\n" +
+    "        <span ng-click=\"download()\" class=\"icon-arrow-circle-o-down\"></span>\n" +
+    "        <span ng-click=\"delete()\" class=\"icon-trash-bin\"></span>\n" +
+    "\n" +
+    "    </div>\n" +
+    "\n" +
+    "    <div class=\"col\">\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "        {{data.lastModified | momentunix : 'L LTS' }}\n" +
+    "\n" +
+    "    </div>\n" +
+    "\n" +
+    "</div>"
+  );
+
+
+  $templateCache.put('js/partials/file-lister.html',
+    "<div class=\"row\">\n" +
+    "    \n" +
+    "\n" +
+    "    <div class=\"p-4 w-100\" ng-repeat=\"upload in uploads\">\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "        {{upload.name}} <span ng-click=\"deleteUpload()\" class=\"icon-cancel\"></span>  \n" +
+    "\n" +
+    "        <div class=\"progress\">\n" +
+    "        <div class=\"progress-bar progress-bar-striped progress-bar-animated\" role=\"progressbar\" style=\"width:{{100*upload.size/upload.progressEvent.loaded}}%\"></div>\n" +
+    "        </div>\n" +
+    "\n" +
+    "    </div>   \n" +
+    "\n" +
+    "</div>\n" +
+    "\n" +
+    "<div ng-repeat=\"folder in folders\">\n" +
+    "\n" +
+    "    <div class=\"card mt-2\">\n" +
+    "\n" +
+    "        <div class=\"bg-primary card-header \">\n" +
+    "            \n" +
+    "\n" +
+    "                \n" +
+    "            <span class=\"icon icon-folder-open-o\"></span>&nbsp;{{folder.createdOn}} \n" +
+    "\n" +
+    "            <span ng-click=\"downloadFolder(folder)\" class=\"icon-arrow-circle-o-down\"></span>\n" +
+    "            <span ng-click=\"deleteFolder(folder)\" class=\"icon-trash-bin\"></span>\n" +
+    "\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "\n" +
+    "        <div class=\"card-body\">\n" +
+    "\n" +
+    "            <div ng-repeat=\"file in folder.files\">    \n" +
+    "\n" +
+    "                \n" +
+    "                <filelisteritem data=\"file\"></filelisteritem>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "            </div>\n" +
+    "            <span>...</span>\n" +
+    "\n" +
+    "        </div>\n" +
+    "\n" +
+    "    </div>\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "\n" +
+    "</div>\n"
+  );
+
 }]);

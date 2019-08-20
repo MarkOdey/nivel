@@ -38,7 +38,7 @@ angular
 
             var parent = $element.parent();
 
-            ////console.log(parent[0]);
+            //////console.log(parent[0]);
 
             elementStyle.display = 'block';
             elementStyle.position = 'absolute';
@@ -128,7 +128,7 @@ angular
 
             $scope.$watch('layout', function () {
 
-                //console.log($scope.layout);
+                ////console.log($scope.layout);
 
                 resized = false;
                 resize();
@@ -229,7 +229,7 @@ angular
                 if($element[0].offsetParent === null || computed == true ) {
 
                 } else {
-                    console.log('is visible')
+                    //console.log('is visible')
 
                     resize();
                     computed = true;
@@ -263,7 +263,7 @@ angular
                 var parentW = $element[0].offsetWidth;
                 var parentH = $element[0].offsetHeight;
 
-                console.log(parentW, parentH)
+                //console.log(parentW, parentH)
 
 
                 var elementRatio = originH/originW;
@@ -316,8 +316,8 @@ angular
                 var parentW = $element[0].offsetWidth;
                 var parentH = $element[0].offsetHeight;
 
-                console.log(element.height);
-                console.log(element.width)
+                //console.log(element.height);
+                //console.log(element.width)
 
                 if(parentW/parentH > element.width/element.height) {
 
@@ -437,7 +437,7 @@ angular
 
             /* resizer.addEventListener('scroll', function(e) {
                 
-                //console.log('firing');
+                ////console.log('firing');
                 resize();
             });*/
       

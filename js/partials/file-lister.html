@@ -1,0 +1,57 @@
+<div class="row">
+    
+
+    <div class="p-4 w-100" ng-repeat="upload in uploads">
+
+
+
+        {{upload.name}} <span ng-click="deleteUpload()" class="icon-cancel"></span>  
+
+        <div class="progress">
+        <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width:{{100*upload.size/upload.progressEvent.loaded}}%"></div>
+        </div>
+
+    </div>   
+
+</div>
+
+<div ng-repeat="folder in folders">
+
+    <div class="card mt-2">
+
+        <div class="bg-primary card-header ">
+            
+
+                
+            <span class="icon icon-folder-open-o"></span>&nbsp;{{folder.createdOn}} 
+
+            <span ng-click="downloadFolder(folder)" class="icon-arrow-circle-o-down"></span>
+            <span ng-click="deleteFolder(folder)" class="icon-trash-bin"></span>
+
+
+        </div>
+
+
+        <div class="card-body">
+
+            <div ng-repeat="file in folder.files">    
+
+                
+                <filelisteritem data="file"></filelisteritem>
+
+
+
+            </div>
+            <span>...</span>
+
+        </div>
+
+    </div>
+
+
+
+
+
+
+
+</div>

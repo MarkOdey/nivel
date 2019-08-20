@@ -1,8 +1,7 @@
 
-
 angular
    .module('nivel')
-   .directive('toggler', [ function () {
+   .directive('niToggler', [ function () {
 
       return {
          restrict: 'A',
@@ -19,13 +18,10 @@ angular
             }
 
 
-            console.log($attr);
-
             var targets = [];
 
             //Breaking the target for each elements
             if($attr.target.indexOf("||") != -1) {
-
                
 
                targets = $attr.target.split("||");
@@ -41,13 +37,20 @@ angular
 
             $element.on('change', function () {
 
+               console.log('value changed!');
+
                check();
 
 
             });
 
 
-            var expectedValue = $attr.if;
+            var expectedValue;
+
+            if($attr.if != undefined){
+
+               expectedValue = $attr.if;
+            }
 
             var check = function () {
 

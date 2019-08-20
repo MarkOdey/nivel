@@ -1,7 +1,7 @@
 
 var template= angular.module('templates', []);
 
-var app = angular.module('nivel', []);
+var app = angular.module('nivel', ['templates']);
 
 /*angular.element(function() {
     console.log('instantiate');
