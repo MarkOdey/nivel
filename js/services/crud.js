@@ -2,14 +2,13 @@ angular
    .module('nivel')
    .service('CrudService', [ 'Emitter', '$q', '$rootScope', 'File', '$http', function(Emitter, $q, $rootScope, File, $http) {
 
-
       Emitter.apply(this, arguments);
 
       var self = this;
 
       self.register(['updating', 'updated']);
 
-      var updating = true;
+      var updating = false;
 
 
       window.addEventListener("beforeunload", function(e) {

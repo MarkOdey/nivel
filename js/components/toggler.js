@@ -75,6 +75,8 @@ angular
 
                   $("#"+id+$attr.salt).show();
 
+                   $("#"+id).attr('disabled', false);
+
 
                }
 
@@ -90,6 +92,11 @@ angular
                   var id = targets[i];
 
                   $("#"+id+$attr.salt).hide();
+
+                  $("#"+id).attr('disabled', true);
+
+
+                  
 
                }
 

@@ -18,11 +18,9 @@ angular
 
             //We iterate for each input fields in the children.
 
-            $element.find('[value], textarea').on('change', function (e) {
+            $element.find('input[type=number], [value], textarea').on('change', function (e) {
 
-
-
-                var inputs = $element.find("input[value], textarea").toArray();
+                var inputs = $element.find("input[type=number], input[value], textarea").toArray();
 
                 var payload = {};
 

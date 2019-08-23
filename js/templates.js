@@ -108,9 +108,9 @@ angular.module('templates').run(['$templateCache', function($templateCache) {
     "\n" +
     "    <button class=\"btn form-control  dropdown-toggle\" type=\"button\" ng-click=\"openDropdown()\">\n" +
     "        \n" +
-    "        {{value}}\n" +
-    "    </button>\n" +
+    "        <div class=\"dropdown-header\">{{value}}</div>\n" +
     "\n" +
+    "    </button>\n" +
     "\n" +
     "    <div ng-class=\"{ show : showDropDown }\" class=\"dropdown-menu\" >\n" +
     "\n" +

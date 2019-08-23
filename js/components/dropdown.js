@@ -15,11 +15,12 @@ angular
          },
          templateUrl:"js/partials/dropdown-toggler.html",
 
+
          link: function ($scope, $element, $attr) {
 
             console.log('dropdown toggler')
 
-            $element[0].style.display="block";
+            $element[0].style.overflow="inherit";
 
             $scope.showDropDown = false;
 

@@ -5058,11 +5058,9 @@ angular
 
             //We iterate for each input fields in the children.
 
-            $element.find('[value], textarea').on('change', function (e) {
+            $element.find('input[type=number], [value], textarea').on('change', function (e) {
 
-
-
-                var inputs = $element.find("input[value], textarea").toArray();
+                var inputs = $element.find("input[type=number], input[value], textarea").toArray();
 
                 var payload = {};
 
@@ -5209,11 +5207,12 @@ angular
          },
          templateUrl:"js/partials/dropdown-toggler.html",
 
+
          link: function ($scope, $element, $attr) {
 
             console.log('dropdown toggler')
 
-            $element[0].style.display="block";
+            $element[0].style.overflow="inherit";
 
             $scope.showDropDown = false;
 
@@ -5449,6 +5448,119 @@ angular
       
         }
 	}
+}]);angular
+    .module('nivel')
+    .directive('errorRequired', [ '$timeout', '$http', 'CrudService', 'Validator', function ($timeout, $http, CrudService, Validator) {
+  
+    return {
+        restrict: 'A',
+
+        scope : {
+
+            'active' :"@",
+            'target' :"@"
+        },
+
+        link: function ($scope, $element, $attr) {
+
+            if(typeof $scope.active ==  "string") {
+
+                $scope.active = Boolean($scope.active);
+            }
+
+
+            var input = $("#"+$scope.target)[0];
+
+            if(input == undefined) {
+                console.log('input is not defined');
+                return;
+
+            }
+
+            $scope.valid = false;
+
+            var isValid = function () {
+
+                var submit = $element.closest("form").find('[type=submit]')[0];
+
+                if(submit != undefined) {
+
+                    if(submit.id == undefined || submit.id == "") {
+
+                      submit.id = Math.round(Math.random()*100000)+"submit";  
+                    }
+
+                    Validator.removeInvalidation(submit, input);
+
+                }
+
+                //submit.prop('disabled', false);
+                $element.hide();
+
+                $scope.valid = true;
+
+            }
+
+            var isInValid= function () {
+
+                var submit = $element.closest("form").find('[type=submit]')[0];
+
+                if(submit != undefined) {
+
+                    if(submit.id == undefined || submit.id == "") {
+
+                      submit.id = Math.round(Math.random()*100000)+"submit";  
+                    }
+
+                    Validator.addInvalidation(submit, input);
+
+                }
+
+                $element.show();
+
+                $scope.valid = false;
+            }
+
+            var check = function () {
+
+                console.log(input.value);
+
+                if(input.value == undefined || input.value == "") {
+
+                    isInValid();
+
+                } else {
+
+                    isValid();
+                }
+
+            }
+
+            if($scope.active ==  true) {
+
+                check();
+               // $element.closest("form").find('[type=submit]').prop('disabled', true);
+               
+            }
+
+
+            if(input != undefined) {
+
+                input.addEventListener('change', function (e) {
+
+                    console.log(input.value);
+
+                   check();
+
+                });
+
+
+            }
+
+        }
+
+    }
+
 }]);
 angular
    .module('nivel')
@@ -7982,6 +8094,8 @@ angular
 
                   $("#"+id+$attr.salt).show();
 
+                   $("#"+id).attr('disabled', false);
+
 
                }
 
@@ -7997,6 +8111,11 @@ angular
                   var id = targets[i];
 
                   $("#"+id+$attr.salt).hide();
+
+                  $("#"+id).attr('disabled', true);
+
+
+                  
 
                }
 
@@ -8131,14 +8250,13 @@ angular
    .module('nivel')
    .service('CrudService', [ 'Emitter', '$q', '$rootScope', 'File', '$http', function(Emitter, $q, $rootScope, File, $http) {
 
-
       Emitter.apply(this, arguments);
 
       var self = this;
 
       self.register(['updating', 'updated']);
 
-      var updating = true;
+      var updating = false;
 
 
       window.addEventListener("beforeunload", function(e) {
@@ -8971,7 +9089,137 @@ angular
   
         });
 
-    }]);angular.module('templates').run(['$templateCache', function($templateCache) {
+    }]);angular
+   .module('nivel')
+   .service('Validator', [ 'Emitter', '$q', '$rootScope', 'File', '$http', function(Emitter, $q, $rootScope, File, $http) {
+
+
+      var self = this;
+
+      var forms = {};
+
+
+
+      this.addInvalidation = function (submit, input) {
+
+
+
+         var form;
+
+         //We check if form is existant
+         if(forms[submit.id] == undefined) {
+
+            //Lets create a new form item.
+            //
+            
+            form = new Emitter();
+            form.submit= submit;
+
+            form.register(["valid", "invalid"]);
+
+            form.invalidations = [];
+
+            forms[submit.id] = form;   
+
+         } else {
+
+            //Let fetch the form in the array.
+
+            form = forms[submit.id];
+         }
+
+
+         form.invalidations[input.id] = input;
+
+         check(form);
+
+         return form;
+
+
+      }
+
+      this.removeInvalidation = function (submit, input) {
+
+
+
+         var form;
+
+         //We check if form is existant
+         if(forms[submit.id] == undefined) {
+
+           return;
+
+         } 
+
+         //Let fetch the form in the array.
+
+         form = forms[submit.id];
+         
+
+         if(form != undefined) {
+
+            delete form.invalidations[input.id];
+         }
+
+         check(form);
+
+         return form;
+
+      }
+
+
+      var check = function (form) {
+
+         if(Object.keys(form.invalidations).length != 0 ) {
+
+            var invalidate = true;
+
+            for(var i in form.invalidations) {
+
+               if(form.invalidations[i].disabled != undefined && form.invalidations[i].disabled == true) {
+                  invalidate = false;
+               }
+
+            }
+
+
+            if(invalidate) {
+
+               form.submit.disabled=true;
+
+               form.emit('invalid');
+
+            } else {
+
+               form.submit.disabled=false;
+
+               form.emit('valid');
+            }
+
+
+            return;
+
+         }
+
+         if(Object.keys(form.invalidations).length == 0 ) {
+
+            form.submit.disabled=false;
+
+            form.emit('valid');
+
+            return;
+         }
+      }
+
+
+
+
+
+
+   }]);
+
+
+angular.module('templates').run(['$templateCache', function($templateCache) {
   'use strict';
 
   $templateCache.put('js/partials/anchor-menu.html',
@@ -9081,9 +9329,9 @@ angular
     "\n" +
     "    <button class=\"btn form-control  dropdown-toggle\" type=\"button\" ng-click=\"openDropdown()\">\n" +
     "        \n" +
-    "        {{value}}\n" +
-    "    </button>\n" +
+    "        <div class=\"dropdown-header\">{{value}}</div>\n" +
     "\n" +
+    "    </button>\n" +
     "\n" +
     "    <div ng-class=\"{ show : showDropDown }\" class=\"dropdown-menu\" >\n" +
     "\n" +
