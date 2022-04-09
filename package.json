@@ -26,7 +26,7 @@
   "bundleDependencies": false,
   "dependencies": {
     "angular": "^1.7.5",
-    "moment": "^2.18.1",
+    "moment": "^2.29.2",
     "perfect-scrollbar": "^0.7.1"
   },
   "deprecated": false,
