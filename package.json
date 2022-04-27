@@ -32,7 +32,7 @@
   "deprecated": false,
   "description": "Website portfolio.",
   "devDependencies": {
-    "grunt": "^1.0.1",
+    "grunt": "^1.5.2",
     "grunt-angular-templates": "^1.1.0",
     "grunt-cli": "^1.2.0",
     "grunt-contrib-concat": "^1.0.1",
